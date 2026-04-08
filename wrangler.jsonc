@@ -32,6 +32,19 @@
 			"service": "learn2dev2026"
 		}
 	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "learn2dev-2026",
+			"database_id": "566309d4-c7be-4264-973b-79bd9bb13d3e"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "OBJECT_STORAGE",
+			"bucket_name": "learn2dev-2026"
+		}
+	],
 	"observability": {
 		"enabled": true
 	},
