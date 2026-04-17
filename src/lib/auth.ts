@@ -3,7 +3,7 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { db } from "@/lib/db";
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, { 
-    provider: "sqlite",
-  }), 
+  database: drizzleAdapter(db, { provider: "sqlite" }),
+  emailAndPassword: { enabled: true, },
 });
+
