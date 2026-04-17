@@ -16,6 +16,8 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@heroui/react": "^3.0.2",
+    "@heroui/styles": "^3.0.2",
     "@opennextjs/cloudflare": "^1.17.1",
     "drizzle-orm": "^0.45.2",
     "next": "16.1.5",
