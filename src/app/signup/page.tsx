@@ -54,11 +54,11 @@ export default function SignUpPage() {
                             <p className="text-sml font-semibold text-[#FFFFFF]/70"> Join us in creating safe spaces</p>
                         </div>
 
-                        <form onSubmit={signUp} className="mt-8 p-4 flex flex-col gap-4">
+                        <form onSubmit={signUp} className="mt-4 p-4 flex flex-col gap-3">
 
                             <div className="grid grid-cols-2 gap-4">
 
-                                <div className="space-y-2 shadow-lg">
+                                <div className="shadow-lg">
                                     <label htmlFor="lastname" className="font-semibold">Last Name</label>
                                     <input id="lastname" name="lastname" type="text" placeholder="Last Name" required 
                                     value={lastname}
@@ -66,7 +66,7 @@ export default function SignUpPage() {
                                     className="w-full rounded-2xl bg-[#F8EACD] px-4 py-3 text-amber-950"/>
                                 </div>
 
-                                <div className="space-y-2 shadow-lg">
+                                <div className="shadow-lg">
                                     <label htmlFor="firstname" className="font-semibold">First Name</label>
                                     <input id="firstname" name="firstname" type="text" placeholder="First Name" required 
                                     value={firstname}
@@ -76,7 +76,7 @@ export default function SignUpPage() {
 
                             </div>
 
-                            <div className="space-y-2 shadow-lg">
+                            <div className="shadow-lg">
                                 <label htmlFor="username" className="font-semibold">Username</label>
                                 <input id="username" name="username" type="text" placeholder="Username" required
                                 value={username}
@@ -84,7 +84,7 @@ export default function SignUpPage() {
                                 className="w-full rounded-2xl bg-[#F8EACD] px-4 py-3 text-amber-950"/>
                             </div>
 
-                            <div className="space-y-2 shadow-lg">
+                            <div className="shadow-lg">
                                 <label htmlFor="email" className="font-semibold">Email</label>
                                 <input id="email" name="email" type="email" placeholder="Email" required
                                 value={email}
@@ -92,7 +92,7 @@ export default function SignUpPage() {
                                 className="w-full rounded-2xl bg-[#F8EACD] px-4 py-3 text-amber-950"/>
                             </div>
 
-                            <div className="space-y-2 shadow-lg">
+                            <div className="shadow-lg">
                                 <label htmlFor="password" className="font-semibold">Password</label>
                                 <input id="password" name="password" type="password" placeholder="Password" required
                                 value={password}
@@ -100,7 +100,7 @@ export default function SignUpPage() {
                                 className="w-full rounded-2xl bg-[#F8EACD] px-4 py-3 text-amber-950"/>
                             </div>
 
-                            <div className="space-y-2 shadow-lg">
+                            <div className="shadow-lg">
                                 <label htmlFor="confirmPassword" className="font-semibold">Confirm Password</label>
                                 <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm Password" required
                                 value={confirmPassword}
@@ -114,7 +114,7 @@ export default function SignUpPage() {
                                 </p>
                             )}
 
-                            <div className="space-y-2 text-center">
+                            <div className="mt-3 text-center">
                                 <button type="submit"
                                 className="w-full rounded-2xl bg-[#F8DE59] py-3 text-black font-extrabold ring-5 ring-white ring-inset
                                 transition duration-200 hover:translate-y-0.5 hover:bg-[#f2d53a] hover:shadow-lg ">
