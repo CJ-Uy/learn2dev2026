@@ -4,6 +4,9 @@ import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  firstname: text("firstname").notNull(),
+  lastname: text("lastname").notNull(),
+  username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   emailVerified: integer("email_verified", { mode: "boolean" })
     .default(false)
@@ -87,16 +90,14 @@ export const verification = sqliteTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const event = sqliteTable("events", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  eventTitle: text("event_title").notNull(),
-  event_date: integer("event_date", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(datetime('now', '+8 hours'))`),
-  event_desc: text("event_desc"),
-  event_dur: integer("event_dur").notNull().default(30),
+export const events = sqliteTable("events", {
+	id: text().primaryKey().notNull(),
+	eventTitle: text("event_title").notNull(),
+	eventDate: integer("event_date").default(sql`(datetime('now', '+8 hours'))`).notNull(),
+	eventDesc: text("event_desc"),
+	eventDur: integer("event_dur").default(30).notNull(),
+	eventHost: text("event_host").notNull(),
+	eventLoc: text("event_loc").notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({
