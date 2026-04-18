@@ -22,7 +22,7 @@ export default function ForgetPasswordPage(){
             return;
         }
 
-        setSuccess("Password reset link sent successfully!")
+        setSuccess("Password Reset link sent! Check your inbox.")
     }
 
     return (
