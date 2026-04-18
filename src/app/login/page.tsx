@@ -20,7 +20,8 @@ export default function LoginPage(){
         });
 
         if (error) {
-            return error.message;
+            setError(error.message);
+            return;
         }
 
         // change to home

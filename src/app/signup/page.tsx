@@ -36,7 +36,8 @@ export default function SignUpPage() {
         });
 
         if (signUpError) {
-            return signUpError.message;
+            setError(signUpError.message)
+            return;
         }
 
         // redirect. to be replaced once finalized

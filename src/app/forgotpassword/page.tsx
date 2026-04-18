@@ -17,7 +17,8 @@ export default function ForgetPasswordPage(){
         });
 
         if (error) {
-            return error.message;
+            setError(error.message);
+            return;
         }
     }
 
