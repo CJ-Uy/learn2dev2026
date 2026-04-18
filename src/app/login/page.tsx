@@ -30,9 +30,12 @@ export default function LoginPage(){
     return (
         <main className="bg-[url('/gonzaga.jpg')] bg-cover bg-center bg-no-repeat">
             <div className="min-h-screen flex items-center justify-center bg-[#c7d1f0]/80">
-                <section className="flex w-full max-w-2xl overflow-hidden rounded-2xl shadow-lg">
+                <section className="flex w-full max-w-2xl overflow-hidden rounded-2xl shadow-xl">
                     <div className="w-full bg-[#3758BF] py-10 px-4">
-                        <h1 className="text-3xl font-semibold text-[#FFFFFF] text-center"> Welcome Back</h1>
+                        <h1 className="text-3xl font-black text-white text-center mb-4">
+                            Sit<span className="text-[#ffcf32]">2</span>Gether
+                        </h1>
+                        <h1 className="text-3xl font-semibold text-[#FFFFFF] text-center"> Welcome Back!</h1>
                         <form onSubmit={login} className="px-10 pt-4 space-y-6">
                             <div className="px-10 pt-4 space-y-6">
                                 <div className="space-y-2 shadow-lg">
@@ -65,7 +68,7 @@ export default function LoginPage(){
                                     </button>  
                                 </div>
 
-                                <p className="font-semibold"> Dont have an account?{" "}
+                                <p className="font-semibold"> Don't have an account?{" "}
                                     <a href="/signup" className="text-[#F8DE59] font-semibold">
                                         Sign up
                                     </a>

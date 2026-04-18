@@ -47,7 +47,7 @@ export default function SignUpPage() {
     return (
         <main className="bg-[url('/gonzaga.jpg')] bg-cover bg-center bg-no-repeat">
             <div className="min-h-screen flex items-center justify-center bg-[#c7d1f0]/80">
-                <section className="flex w-full max-w-4xl overflow-hidden rounded-2xl shadow-lg">
+                <section className="flex w-full max-w-4xl overflow-hidden rounded-2xl shadow-xl">
                     <div className="w-full max-w-md bg-[#3758BF] px-6 py-10">
                         <div className="px-4 pt-4">
                             <h1 className="text-3xl font-semibold text-[#FFFFFF]"> Create your account</h1>
