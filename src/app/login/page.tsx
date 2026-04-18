@@ -2,10 +2,12 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage(){
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const resetStatus = searchParams.get("reset");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -64,6 +66,12 @@ export default function LoginPage(){
                                 {error && (
                                 <p className="rounded-xl bg-red-100 p-2 text-red-700 text-center">
                                     Error: {error}
+                                </p>
+                                )}
+
+                                {resetStatus === "success" && (
+                                <p className="rounded-xl bg-green-100 p-2 text-center text-green-700">
+                                    Password successfully reset.
                                 </p>
                                 )}
 
