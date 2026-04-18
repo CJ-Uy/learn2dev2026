@@ -160,7 +160,7 @@ export default function SignUpPage() {
                                 </span>
                                 <div>
                                     <h2 className="text-lg font-bold text-[#3758BF]">Discover Events</h2>
-                                    <p className="text-slate-700">Be updated with ongoing events.</p>
+                                    <p className="text-slate-700">Never miss out on upcoming campus events.</p>
                                 </div>
                             </div>
 
@@ -171,8 +171,8 @@ export default function SignUpPage() {
                                     </svg>
                                 </span>
                                 <div>
-                                    <h2 className="text-lg font-bold text-[#3758BF]">Book Seats</h2>
-                                    <p className="text-slate-700">Attend real gatherings.</p>
+                                    <h2 className="text-lg font-bold text-[#3758BF]">Schedule Meetups</h2>
+                                    <p className="text-slate-700">Pick a spot, set a time, show up.</p>
                                 </div>
                             </div>
                         </div>
