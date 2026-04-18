@@ -92,11 +92,13 @@ export const event = sqliteTable("events", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   eventTitle: text("event_title").notNull(),
-  event_date: integer("event_date", { mode: "timestamp" })
+  eventDate: integer("event_date", { mode: "timestamp" })
     .notNull()
     .default(sql`(datetime('now', '+8 hours'))`),
-  event_desc: text("event_desc"),
-  event_dur: integer("event_dur").notNull().default(30),
+  eventDesc: text("event_desc"),
+  eventDur: integer("event_dur").notNull().default(30),
+  eventHost: text("event_host").notNull(),
+  eventLoc: text("event_loc").notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({
