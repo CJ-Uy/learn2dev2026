@@ -37,7 +37,7 @@ export default function LoginPage(){
                         </h1>
                         <h1 className="text-3xl font-semibold text-[#FFFFFF] text-center"> Welcome Back!</h1>
                         <form onSubmit={login} className="px-10 pt-4 space-y-6">
-                            <div className="px-10 pt-4 space-y-6">
+                            <div className="px-10 pt-4 space-y-3">
                                 <div className="space-y-2 shadow-lg">
                                     <label htmlFor="email" className="font-semibold">Email</label>
                                     <input id="email" name="email" type="email" placeholder="Email" required
@@ -52,6 +52,12 @@ export default function LoginPage(){
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full rounded-2xl bg-[#F8EACD] px-4 py-3 text-amber-950"/>
+                                </div>
+
+                                <div className="flex justify-end">
+                                        <a href="/forgotpassword" className="text-sm text-white/60 hover:text-white">
+                                        Forgot password?
+                                    </a>
                                 </div>
 
                                 {error && (
