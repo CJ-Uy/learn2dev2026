@@ -27,7 +27,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     <div className="max-w-2xl mx-auto p-8">
       <Link 
         href="/all" 
-        className="text-blue-600 hover:text-blue-800 mb-6 inline-block"
+        className="text-pink-300 hover:text-pink-800 mb-6 inline-block"
       >
         ← Back to all events
       </Link>
@@ -40,7 +40,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {new Date(event.event_date).toLocaleDateString(undefined, {
+            {new Date(event.eventDate).toLocaleDateString(undefined, {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
@@ -51,16 +51,16 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {new Date(event.event_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {new Date(event.eventDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             <span className="mx-2">•</span>
-            {event.event_dur} minutes
+            {event.eventDur} minutes
           </div>
         </div>
 
         <div className="prose max-w-none">
           <h2 className="text-xl font-semibold mb-2 text-gray-800">Description</h2>
           <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-            {event.event_desc || "No description provided."}
+            {event.eventDesc || "No description provided."}
           </p>
         </div>
       </div>

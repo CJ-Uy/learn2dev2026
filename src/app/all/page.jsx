@@ -27,6 +27,26 @@ export default function AllEventsPage() {
     fetchEvents();
   }, []);
 
+  const formatDate = (dateValue) => {
+    try {
+      const d = new Date(dateValue);
+      if (isNaN(d.getTime())) return 'Invalid Date';
+      return d.toLocaleDateString();
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  };
+
+  const formatTime = (dateValue) => {
+    try {
+      const d = new Date(dateValue);
+      if (isNaN(d.getTime())) return 'Invalid Time';
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      return 'Invalid Time';
+    }
+  };
+
   if (loading) return <div className="p-8 text-center">Loading events...</div>;
   if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
 
@@ -40,18 +60,24 @@ export default function AllEventsPage() {
           {events.map((event) => (
             <div key={event.id} className="border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">
               <h2 className="text-xl font-semibold mb-2">
-                <Link href={`/all/${event.id}`} className="hover:text-pink-200 transition-colors underline">
-                  {event.eventTitle}
-                </Link>
+                {event.eventTitle}
               </h2>
               <p className="text-gray-600 mb-4 flex-grow line-clamp-2">{event.event_desc}</p>
               <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
                 <span>
-                  {new Date(event.event_date).toLocaleDateString()} at{' '}
-                  {/* {new Date(event.event_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} */}
+                  {formatDate(event.eventDate)} at {formatTime(event.eventDate)}
                 </span>
-                {/* <span>{event.event_dur} mins</span> */}
+                <span>{event.eventDur} mins</span>
               </div>
+              <Link 
+                href={`/all/${event.id}`}
+                className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center"
+              >
+                View Details
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
           ))}
         </div>
