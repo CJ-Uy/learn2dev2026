@@ -55,6 +55,8 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             <span className="mx-2">•</span>
             {event.eventDur} minutes
           </div>
+          <p>At { event.eventLoc } </p>
+          <p>By { event.eventHost }</p>
         </div>
 
         <div className="prose max-w-none">

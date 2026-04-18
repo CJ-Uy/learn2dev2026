@@ -65,10 +65,12 @@ export default function AllEventsPage() {
               <p className="text-gray-600 mb-4 flex-grow line-clamp-2">{event.event_desc}</p>
               <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
                 <span>
-                  {formatDate(event.eventDate)} at {formatTime(event.eventDate)}
+                  <p>{formatDate(event.eventDate)}</p>
+                  <p>{formatTime(event.eventDate)}</p>
                 </span>
-                <span>{event.eventDur} mins</span>
               </div>
+                <p>At { event.eventLoc } </p>
+                <p>By { event.eventHost }</p>
               <Link 
                 href={`/all/${event.id}`}
                 className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center"
