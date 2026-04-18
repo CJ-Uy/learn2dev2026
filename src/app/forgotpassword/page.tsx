@@ -2,30 +2,23 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { resetPassword } from "better-auth/api";
 
 export default function ForgetPasswordPage(){
-    const router = useRouter();
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
     async function resetPassword(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError("");
 
-        const { error } = await authClient.signIn.email({
+        const { error } = await authClient.requestPasswordReset({
             email,
-            password,
+            redirectTo: "http://localhost:3000/resetpassword",
         });
 
         if (error) {
             return error.message;
         }
-
-        // change to home
-        router.push("/");
     }
 
     return (
