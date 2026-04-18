@@ -10,16 +10,22 @@ export default function LoginPage(){
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    // async function login(e: React.FormEvent<HTMLFormElement>) {
-    //     e.preventDefault();
-    //     setError("");
+    async function login(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setError("");
 
+        const { error } = await authClient.signIn.email({
+            email,
+            password,
+        });
 
+        if (error) {
+            return error.message;
+        }
 
-    //     return "";
-
-
-
+        // change to home
+        router.push("/");
+    }
 
     return (
         <main className="bg-[url('/gonzaga.jpg')] bg-cover bg-center bg-no-repeat">
@@ -27,6 +33,7 @@ export default function LoginPage(){
                 <section className="flex w-full max-w-2xl overflow-hidden rounded-2xl shadow-lg">
                     <div className="w-full bg-[#3758BF] py-10 px-4">
                         <h1 className="text-3xl font-semibold text-[#FFFFFF] text-center"> Welcome Back</h1>
+                        <form onSubmit={login} className="px-10 pt-4 space-y-6">
                             <div className="px-10 pt-4 space-y-6">
                                 <div className="space-y-2 shadow-lg">
                                     <label htmlFor="email" className="font-semibold">Email</label>
@@ -44,6 +51,12 @@ export default function LoginPage(){
                                     className="w-full rounded-2xl bg-[#F8EACD] px-4 py-3 text-amber-950"/>
                                 </div>
 
+                                {error && (
+                                <p className="rounded-xl bg-red-100 p-2 text-red-700 text-center">
+                                    Error: {error}
+                                </p>
+                                )}
+
                                 <div className="space-y-2 text-center">
                                     <button type="submit"
                                     className="w-full rounded-2xl bg-[#F8DE59] py-3 text-black font-extrabold ring-5 ring-white ring-inset
@@ -58,7 +71,7 @@ export default function LoginPage(){
                                     </a>
                                 </p>
                             </div>
-
+                        </form>
                         </div>
                 </section>
             </div>
