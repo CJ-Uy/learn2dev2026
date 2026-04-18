@@ -6,6 +6,7 @@ import { useState } from "react";
 export default function ForgetPasswordPage(){
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     async function resetPassword(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -20,6 +21,8 @@ export default function ForgetPasswordPage(){
             setError(error.message);
             return;
         }
+
+        setSuccess("Password reset link sent successfully!")
     }
 
     return (
@@ -45,6 +48,12 @@ export default function ForgetPasswordPage(){
                                 <p className="rounded-xl bg-red-100 p-2 text-red-700 text-center">
                                     Error: {error}
                                 </p>
+                                )}
+
+                                {success && (
+                                    <p className="rounded-xl bg-green-100 p-2 text-green-700 text-center">
+                                        {success}
+                                    </p>
                                 )}
 
                                 <div className="space-y-2 text-center">
