@@ -160,7 +160,7 @@ export default function SignUpPage() {
                                 </span>
                                 <div>
                                     <h2 className="text-lg font-bold text-[#3758BF]">Discover Events</h2>
-                                    <p className="text-slate-700">Never miss out on upcoming campus events.</p>
+                                    <p className="text-slate-700">Never miss out on campus events.</p>
                                 </div>
                             </div>
 
