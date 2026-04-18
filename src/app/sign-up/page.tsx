@@ -31,6 +31,7 @@ export default function SignUpPage() {
             firstname,
             lastname,
             username,
+            displayUsername: username,
             email,
             password,
         });
