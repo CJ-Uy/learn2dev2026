@@ -80,7 +80,7 @@ export default function AllEventsPage() {
                 <p>At { event.eventLoc } </p>
                 <p>By { event.eventHost }</p>
               <Link 
-                href={`/all/${event.id}`}
+                href={`/events/${event.id}`}
                 className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center"
               >
                 View Details

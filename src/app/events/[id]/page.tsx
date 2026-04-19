@@ -26,7 +26,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   return (
     <div className="max-w-2xl mx-auto p-8">
       <Link 
-        href="/all" 
+        href="/events" 
         className="text-pink-300 hover:text-pink-800 mb-6 inline-block"
       >
         ← Back to all events

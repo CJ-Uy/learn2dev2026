@@ -93,12 +93,15 @@ export const verification = sqliteTable(
 
 export const events = sqliteTable("events", {
 	id: text().primaryKey().notNull(),
+	userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
 	eventTitle: text("event_title").notNull(),
 	eventDate: integer("event_date").default(sql`(datetime('now', '+8 hours'))`).notNull(),
 	eventDesc: text("event_desc"),
 	eventDur: integer("event_dur").default(30).notNull(),
 	eventHost: text("event_host").notNull(),
 	eventLoc: text("event_loc").notNull(),
+	currentParticipants: integer("current_participants").default(0).notNull(),
+	maxParticipants: integer("max_participants"),
 });
 
 export const userRelations = relations(user, ({ many }) => ({
