@@ -52,7 +52,15 @@ export default function AllEventsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">All Events</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">All Events</h1>
+        <Link
+          href="/events/create"
+          className="rounded-2xl bg-[#3758BF] px-6 py-2 text-white font-bold transition duration-200 hover:bg-[#2d47a0] hover:shadow-md"
+        >
+          + Create Event
+        </Link>
+      </div>
       {events.length === 0 ? (
         <p className="text-gray-500">No events found.</p>
       ) : (
