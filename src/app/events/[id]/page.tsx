@@ -33,7 +33,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
       </Link>
       
       <div className="bg-white border rounded-xl p-8 shadow-sm">
-        <h1 className="text-4xl font-bold mb-4 text-gray-900">{event.eventTitle}</h1>
+        <h1 className="text-4xl font-bold mb-4 text-[#3758BF]">{event.eventTitle}</h1>
         
         <div className="flex flex-wrap gap-4 mb-8 text-gray-600">
           <div className="flex items-center">
@@ -60,7 +60,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         </div>
 
         <div className="prose max-w-none">
-          <h2 className="text-xl font-semibold mb-2 text-gray-800">Description</h2>
+          <h2 className="text-xl font-semibold mb-2 text-[#F063A0]">Description</h2>
           <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
             {event.eventDesc || "No description provided."}
           </p>
