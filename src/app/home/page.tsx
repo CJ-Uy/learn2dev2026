@@ -1,7 +1,12 @@
+"use client";
+import { authClient } from "@/lib/auth-client";
+
 export default function HomePage() {
-  return (
-    <div className="p-8">
-      <p className="text-slate-500">hi</p>
-    </div>
-  );
+    const { data: session } = authClient.useSession();
+    const username = session?.user?.username;
+    return (
+        <div className="p-8">
+        <p className="text-black">hi {username}</p>
+        </div>
+    );
 }
