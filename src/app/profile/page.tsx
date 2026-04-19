@@ -1,7 +1,9 @@
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-
-export default function ProfilePage(){
-    return (
-        <h1>hi</h1>
-    );
+export default async function ProfileRedirect() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/login");
+  redirect(`/profile/${session.user.username}`);
 }
