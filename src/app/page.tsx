@@ -1,20 +1,28 @@
-import Image from "next/image";
+import { SearchField, Label, Description, FieldError } from "@heroui/react";
+import Link from "next/link";
 
 export default function Home() {
-	return (
-		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-				<Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
-				<ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-					<li className="mb-2 tracking-[-.01em]">
-						Get started by editing{" "}
-						<code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-							src/app/page.tsx
-						</code>
-						.
-					</li>
-					<li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-				</ol>
+  return (
+    <>
+      <div className="bg-[#3758BF] h-[15vh] flex flex-row">
+        {/* Logo and Search */}
+        <div className="flex flex-row basis-1/2">
+          <h1 className="basis-1/4 flex justify-center items-center text-white font-black text-3xl">
+            LOGO
+          </h1>
+          <div className="flex justify-center items-center">
+            <SearchField name="search">
+              <SearchField.Group>
+                <SearchField.SearchIcon />
+                <SearchField.Input
+                  className="w-[280px]"
+                  placeholder="Search..."
+                />
+                <SearchField.ClearButton />
+              </SearchField.Group>
+            </SearchField>
+          </div>
+        </div>
 
 				<div className="flex gap-4 items-center flex-col sm:flex-row">
 					<a
