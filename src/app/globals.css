@@ -4,6 +4,9 @@
 :root {
 	--background: #ffffff;
 	--foreground: #171717;
+	--zblue: #3758BF;
+	--zyellow: #F8DE59;
+	--zpink:#F063A0;
 }
 
 @theme inline {
@@ -17,9 +20,6 @@
 	:root {
 		--background: #c7d1f0;
 		--foreground: #ededed;
-		--zblue: #3758BF;
-		--zyellow: #F8DE59;
-		--zpink:#F063A0;
 	}
 }
 
