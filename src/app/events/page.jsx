@@ -10,15 +10,18 @@ export default function AllEventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [attendingEvents, setAttendingEvents] = useState([]);
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('/api/all_events');
-        if (!response.ok) {
-          throw new Error('Failed to fetch events');
-        }
-        const data = await response.json();
-        setEvents(data);
+        const [allRes, attendingRes] = await Promise.all([
+          fetch('/api/all_events'),
+          fetch('/api/events/attending'),
+        ]);
+        if (!allRes.ok) throw new Error('Failed to fetch events');
+        setEvents(await allRes.json());
+        if (attendingRes.ok) setAttendingEvents(await attendingRes.json());
       } catch (err) {
         setError(err.message);
       } finally {
@@ -58,7 +61,6 @@ export default function AllEventsPage() {
   const yourEvents = events.filter((e) => e.userId === userId && e.eventDate >= now);
   const overdueEvents = events.filter((e) => e.eventDate < now);
   const allUpcoming = events.filter((e) => e.eventDate >= now);
-  const attendingEvents = [];
 
   function EventGrid({ events, overdue = false }) {
     return events.length === 0 ? (
