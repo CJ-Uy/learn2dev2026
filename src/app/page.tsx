@@ -1,6 +1,10 @@
+"use client";
 import { SearchField } from "@heroui/react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className="bg-[#3758BF] h-[15vh] flex flex-row">
       {/* Logo and Search */}
@@ -29,6 +33,12 @@ export default function Home() {
         >
           View All Events
         </a>
+        <button
+          className="rounded-full border border-solid border-white/40 transition-colors flex items-center justify-center text-white hover:bg-white/10 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+          onClick={() => authClient.signOut().then(() => router.push("/login"))}
+        >
+          Logout
+        </button>
       </div>
     </div>
   );
