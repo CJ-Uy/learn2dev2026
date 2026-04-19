@@ -3,6 +3,8 @@ import { events as eventSchema } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 interface EventDetailPageProps {
   params: Promise<{
@@ -12,6 +14,7 @@ interface EventDetailPageProps {
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const { id } = await params;
+  const session = await auth.api.getSession({ headers: await headers() });
 
   const event = await db
     .select()
@@ -25,12 +28,19 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <Link 
-        href="/events" 
-        className="text-pink-300 hover:text-pink-800 mb-6 inline-block"
-      >
-        ← Back to all events
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/events" className="text-pink-300 hover:text-pink-800">
+          ← Back to all events
+        </Link>
+        {session?.user?.id === event.userId && (
+          <Link
+            href={`/events/${id}/edit`}
+            className="rounded-xl bg-[#3758BF] px-5 py-2 text-white font-bold text-sm transition hover:bg-[#2d47a0]"
+          >
+            Edit Event
+          </Link>
+        )}
+      </div>
       
       <div className="bg-white border rounded-xl p-8 shadow-sm">
         <h1 className="text-4xl font-bold mb-4 text-[#3758BF]">{event.eventTitle}</h1>

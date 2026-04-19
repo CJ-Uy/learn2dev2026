@@ -84,15 +84,25 @@ export default function AllEventsPage() {
                 {event.currentParticipants ?? 0} / {event.maxParticipants} participants
               </p>
             )}
-            <Link
-              href={`/events/${event.id}`}
-              className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center mt-2"
-            >
-              View Details
-              <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+            <div className="flex items-center gap-4 mt-2">
+              <Link
+                href={`/events/${event.id}`}
+                className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center"
+              >
+                View Details
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              {event.userId === userId && (
+                <Link
+                  href={`/events/${event.id}/edit`}
+                  className="text-[#3758BF] font-medium text-sm hover:underline"
+                >
+                  Edit
+                </Link>
+              )}
+            </div>
           </div>
         ))}
       </div>
