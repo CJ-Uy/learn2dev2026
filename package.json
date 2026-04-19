@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.5",
+    "@heroui/react": "^3.0.2",
+    "@heroui/styles": "^3.0.2",
     "@opennextjs/cloudflare": "^1.17.1",
     "better-auth": "^1.6.5",
     "drizzle-orm": "^0.45.2",
