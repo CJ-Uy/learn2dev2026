@@ -1,11 +1,11 @@
 import { db } from "@/lib/db";
-import { event } from "@/lib/schema";
+import { events } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
 
 export async function GET() {
   try {
-    const allEvents = await db.select().from(event).all();
+    const allEvents = await db.select().from(events).all();
     return NextResponse.json(allEvents);
   } catch (error) {
     console.error("Error fetching events:", error);
