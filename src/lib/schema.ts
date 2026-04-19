@@ -104,9 +104,19 @@ export const events = sqliteTable("events", {
 	maxParticipants: integer("max_participants"),
 });
 
+export const eventRegistrations = sqliteTable("event_registrations", {
+  id: text().primaryKey().notNull(),
+  eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  registeredAt: integer("registered_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+});
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  registrations: many(eventRegistrations),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -121,4 +131,13 @@ export const accountRelations = relations(account, ({ one }) => ({
     fields: [account.userId],
     references: [user.id],
   }),
+}));
+
+export const eventRegistrationRelations = relations(eventRegistrations, ({ one }) => ({
+  event: one(events, { fields: [eventRegistrations.eventId], references: [events.id] }),
+  user: one(user, { fields: [eventRegistrations.userId], references: [user.id] }),
+}));
+
+export const eventsRelations = relations(events, ({ many }) => ({
+  registrations: many(eventRegistrations),
 }));
