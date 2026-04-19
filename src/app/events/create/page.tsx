@@ -28,6 +28,11 @@ export default function CreateEventPage() {
       maxParticipants,
     };
 
+    if (new Date(data.eventDate) < new Date()) {
+      setError("Event date cannot be in the past");
+      return;
+    }
+
     if (data.eventDur < 1) {
       setError("Invalid Duration (Value must be at least 1 minute)");
       return;
@@ -76,6 +81,7 @@ export default function CreateEventPage() {
             <div>
               <label htmlFor="eventDate" className="font-semibold text-sm block mb-1 text-[#3758BF]">Date & Time</label>
               <input id="eventDate" name="eventDate" type="datetime-local" required
+                min={new Date().toISOString().slice(0, 16)}
                 className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
             </div>
             <div>
