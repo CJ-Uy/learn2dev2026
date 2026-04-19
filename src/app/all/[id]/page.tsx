@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { event as eventSchema } from "@/lib/schema";
+import { events as eventSchema } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
