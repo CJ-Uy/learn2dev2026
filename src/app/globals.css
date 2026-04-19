@@ -12,6 +12,9 @@
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-zblue: var(--zblue);
+	--color-zyellow: var(--zyellow);
+	--color-zpink: var(--zpink);
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
 }
