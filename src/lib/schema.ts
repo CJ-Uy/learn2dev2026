@@ -133,6 +133,18 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
+export const eventComments = sqliteTable("event_comments", {
+  id: text().primaryKey().notNull(),
+  eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  parentId: text("parent_id"), // null = top-level; always points to a top-level comment id
+  replyToUsername: text("reply_to_username"), // stored for display: "replying to @xyz"
+  content: text("content").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+});
+
 export const eventRegistrationRelations = relations(eventRegistrations, ({ one }) => ({
   event: one(events, { fields: [eventRegistrations.eventId], references: [events.id] }),
   user: one(user, { fields: [eventRegistrations.userId], references: [user.id] }),
@@ -140,4 +152,10 @@ export const eventRegistrationRelations = relations(eventRegistrations, ({ one }
 
 export const eventsRelations = relations(events, ({ many }) => ({
   registrations: many(eventRegistrations),
+  comments: many(eventComments),
+}));
+
+export const eventCommentRelations = relations(eventComments, ({ one }) => ({
+  event: one(events, { fields: [eventComments.eventId], references: [events.id] }),
+  user: one(user, { fields: [eventComments.userId], references: [user.id] }),
 }));

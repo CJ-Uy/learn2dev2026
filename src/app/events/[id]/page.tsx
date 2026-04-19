@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import RegisterButton from "./RegisterButton";
+import CommentsSection from "./CommentsSection";
 
 interface EventDetailPageProps {
   params: Promise<{ id: string }>;
@@ -24,6 +25,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   if (!event) notFound();
 
   const isHost = session?.user?.id === event.userId;
+
+  const allRegistrations = await db
+    .select({ userId: eventRegistrations.userId })
+    .from(eventRegistrations)
+    .where(eq(eventRegistrations.eventId, id))
+    .all();
+  const participantIds = allRegistrations.map((r) => r.userId);
 
   const registration = session
     ? await db.select({ id: eventRegistrations.id })
@@ -96,6 +104,14 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
         {/* Participants */}
         <ParticipantsList eventId={id} />
+
+        {/* Comments */}
+        <CommentsSection
+          eventId={id}
+          hostId={event.userId}
+          participantIds={participantIds}
+          currentUserId={session?.user?.id ?? null}
+        />
       </div>
     </div>
   );
