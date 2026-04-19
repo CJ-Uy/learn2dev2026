@@ -65,8 +65,9 @@ export default function CommentsSection({ eventId, hostId, participantIds, curre
 
   useEffect(() => {
     fetch(`/api/events/${eventId}/comments`)
-      .then((r) => r.json())
+      .then((r) => r.json().catch(() => []))
       .then((data) => setComments(Array.isArray(data) ? data : []))
+      .catch(() => setComments([]))
       .finally(() => setLoading(false));
   }, [eventId]);
 
