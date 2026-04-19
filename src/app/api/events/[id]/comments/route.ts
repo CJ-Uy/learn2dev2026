@@ -17,7 +17,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     const userIds = [...new Set(comments.map((c) => c.userId))];
     const users = await db
-      .select({ id: user.id, name: user.name, username: user.username })
+      .select({ id: user.id, name: user.name, username: user.username, image: user.image })
       .from(user)
       .where(inArray(user.id, userIds))
       .all();
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const [comment, u] = await Promise.all([
     db.select().from(eventComments).where(eq(eventComments.id, newId)).get(),
-    db.select({ id: user.id, name: user.name, username: user.username })
+    db.select({ id: user.id, name: user.name, username: user.username, image: user.image })
       .from(user).where(eq(user.id, session.user.id)).get(),
   ]);
 

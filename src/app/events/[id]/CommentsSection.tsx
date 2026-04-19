@@ -5,6 +5,7 @@ interface CommentUser {
   id: string;
   name: string;
   username: string;
+  image: string | null;
 }
 
 interface Comment {
@@ -41,12 +42,10 @@ function UserBadges({ userId, hostId, participantIds }: { userId: string; hostId
   );
 }
 
-function Avatar({ name }: { name: string }) {
-  return (
-    <div className="w-8 h-8 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-sm select-none shrink-0">
-      {name.charAt(0).toUpperCase()}
-    </div>
-  );
+function Avatar({ name, image }: { name: string; image?: string | null }) {
+  return image
+    ? <img src={image} alt="avatar" className="w-8 h-8 rounded-full object-cover shrink-0" />
+    : <div className="w-8 h-8 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-sm select-none shrink-0">{name.charAt(0).toUpperCase()}</div>;
 }
 
 function formatTime(ts: number) {
@@ -113,7 +112,7 @@ export default function CommentsSection({ eventId, hostId, participantIds, curre
 
     return (
       <div className={`flex gap-3 ${isReply ? "ml-10 mt-3" : "mt-4"}`}>
-        <Avatar name={name} />
+        <Avatar name={name} image={c.user?.image} />
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-sm">{name}</span>

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { events as eventSchema, eventRegistrations } from "@/lib/schema";
+import { events as eventSchema, eventRegistrations, user as userSchema } from "@/lib/schema";
 import { eq, and } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -41,6 +41,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     : null;
   const isRegistered = !!registration?.id;
 
+  const hostUser = await db
+    .select({ image: userSchema.image, username: userSchema.username })
+    .from(userSchema)
+    .where(eq(userSchema.id, event.userId))
+    .get();
+
   return (
     <div className="max-w-2xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
@@ -78,7 +84,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             {event.eventDur} minutes
           </div>
           <p>At {event.eventLoc}</p>
-          <p>By {event.eventHost}</p>
+          <div className="flex items-center gap-2">
+            {hostUser?.image
+              ? <img src={hostUser.image} alt="host" className="w-6 h-6 rounded-full object-cover" />
+              : <div className="w-6 h-6 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-xs select-none shrink-0">{event.eventHost.charAt(0).toUpperCase()}</div>
+            }
+            <span>By {event.eventHost}</span>
+          </div>
           {event.maxParticipants != null && (
             <p>{event.currentParticipants} / {event.maxParticipants} participants</p>
           )}
@@ -129,9 +141,10 @@ async function ParticipantsList({ eventId }: { eventId: string }) {
       <ul className="space-y-3">
         {participants.map((p) => (
           <li key={p.id} className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-sm select-none shrink-0">
-              {p.name.charAt(0).toUpperCase()}
-            </div>
+            {p.image
+              ? <img src={p.image} alt="avatar" className="w-9 h-9 rounded-full object-cover shrink-0" />
+              : <div className="w-9 h-9 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-sm select-none shrink-0">{p.name.charAt(0).toUpperCase()}</div>
+            }
             <div>
               <p className="font-semibold text-sm leading-tight">{p.name}</p>
               <p className="text-xs text-slate-500">@{p.username}</p>

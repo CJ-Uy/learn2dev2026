@@ -42,10 +42,10 @@ export default function Header() {
             {username && <span className="text-white/60 text-xs">@{username}</span>}
           </div>
 
-          {/* Can be changed to a profile pic */}
-          <div className="w-10 h-10 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-lg select-none">
-            {displayName.charAt(0).toUpperCase()}
-          </div>
+          {(session?.user as { image?: string })?.image
+            ? <img src={(session?.user as { image?: string }).image} alt="avatar" className="w-10 h-10 rounded-full object-cover" />
+            : <div className="w-10 h-10 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-lg select-none">{displayName.charAt(0).toUpperCase()}</div>
+          }
         </Link>
 
         <button
