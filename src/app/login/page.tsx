@@ -1,10 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage(){
+function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const resetStatus = searchParams.get("reset");
@@ -22,7 +22,7 @@ export default function LoginPage(){
         });
 
         if (error) {
-            setError(error.message);
+            setError(error.message ?? "An error occurred");
             return;
         }
 
@@ -94,5 +94,13 @@ export default function LoginPage(){
                 </section>
             </div>
         </main>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense>
+            <LoginForm />
+        </Suspense>
     );
 }

@@ -23,7 +23,8 @@ export default function EditEventPage() {
   useEffect(() => {
     fetch(`/api/all_events/${id}`)
       .then((r) => { if (!r.ok) throw new Error("Event not found"); return r.json(); })
-      .then((event) => {
+      .then((raw) => {
+        const event = raw as { eventDate: number; eventTitle: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number };
         const d = new Date(event.eventDate);
         const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
           .toISOString()

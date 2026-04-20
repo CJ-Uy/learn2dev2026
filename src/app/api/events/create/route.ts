@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { eventTitle, eventDate, eventDesc, eventDur, eventHost, eventLoc, maxParticipants } =
-    await req.json();
+    await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventHost: string; eventLoc: string; maxParticipants?: number };
 
   if (!eventTitle || !eventDate || !eventHost || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });

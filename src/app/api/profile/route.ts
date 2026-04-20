@@ -9,7 +9,7 @@ export async function PATCH(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { displayUsername, bio, year, course, image } = await req.json();
+  const { displayUsername, bio, year, course, image } = await req.json() as { displayUsername?: string; bio?: string; year?: string; course?: string; image?: string };
 
   try {
     await db.update(user).set({

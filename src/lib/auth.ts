@@ -5,13 +5,12 @@ import { db } from "@/lib/db";
 import * as schema from "@/lib/schema";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "sqlite", schema, }),
-  emailAndPassword: { 
-    enabled: true, 
+  emailAndPassword: {
+    enabled: true,
     sendResetPassword: async ({ user, url, token }) => {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "noreply@ripmcfc.com",
         to: user.email,

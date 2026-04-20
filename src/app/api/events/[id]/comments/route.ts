@@ -35,7 +35,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { content, parentId, replyToUsername } = await req.json();
+  const { content, parentId, replyToUsername } = await req.json() as { content: string; parentId?: string; replyToUsername?: string };
 
   if (!content?.trim()) return NextResponse.json({ error: "Comment cannot be empty" }, { status: 400 });
 

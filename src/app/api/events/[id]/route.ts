@@ -22,7 +22,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { eventTitle, eventDate, eventDesc, eventDur, eventLoc, maxParticipants } = await req.json();
+  const { eventTitle, eventDate, eventDesc, eventDur, eventLoc, maxParticipants } = await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number };
 
   if (!eventTitle || !eventDate || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });

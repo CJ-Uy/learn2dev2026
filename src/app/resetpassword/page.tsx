@@ -1,10 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ResetPasswordPage(){
+function ResetPasswordForm(){
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
@@ -34,7 +34,7 @@ export default function ResetPasswordPage(){
         });
 
         if (error) {
-            setError(error.message);
+            setError(error.message ?? "An error occurred");
             return;
         }
 
@@ -88,5 +88,13 @@ export default function ResetPasswordPage(){
                 </section>
             </div>
         </main>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense>
+            <ResetPasswordForm />
+        </Suspense>
     );
 }
