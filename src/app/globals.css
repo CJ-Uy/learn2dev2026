@@ -4,13 +4,26 @@
 :root {
 	--background: #ffffff;
 	--foreground: #171717;
+	--zblue: #3758BF;
+	--zyellow: #F8DE59;
+	--zpink:#F063A0;
 }
 
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-zblue: var(--zblue);
+	--color-zyellow: var(--zyellow);
+	--color-zpink: var(--zpink);
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #c7d1f0;
+		--foreground: #ededed;
+	}
 }
 
 body {
