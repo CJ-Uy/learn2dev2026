@@ -66,13 +66,16 @@ export default function AllEventsPage() {
     return events.length === 0 ? (
       <p className="text-gray-500">No events found.</p>
     ) : (
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols">
         {events.map((event) => (
-          <div key={event.id} className={`border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col ${overdue ? 'opacity-60' : ''}`}>
-            <h2 className="text-xl font-semibold mb-2">
-              {event.eventTitle}
-            </h2>
-            <p className="text-gray-600 mb-4 grow line-clamp-2">{event.eventDesc}</p>
+          <div
+            key={event.id}
+            className={`border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col bg-[#f063a097] ${overdue ? "opacity-60" : ""}`}
+          >
+            <h2 className="text-xl font-semibold mb-2">{event.eventTitle}</h2>
+            <p className="text-gray-600 mb-4 grow line-clamp-2">
+              {event.eventDesc}
+            </p>
             <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
               <span>
                 <p>{formatDate(event.eventDate)}</p>
@@ -83,7 +86,8 @@ export default function AllEventsPage() {
             <p>By {event.eventHost}</p>
             {event.maxParticipants != null && (
               <p className="text-sm text-gray-500 mt-1">
-                {event.currentParticipants ?? 0} / {event.maxParticipants} participants
+                {event.currentParticipants ?? 0} / {event.maxParticipants}{" "}
+                participants
               </p>
             )}
             <div className="flex items-center gap-4 mt-2">
@@ -92,8 +96,18 @@ export default function AllEventsPage() {
                 className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center"
               >
                 View Details
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </Link>
               {event.userId === userId && (
