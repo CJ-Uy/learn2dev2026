@@ -6,7 +6,7 @@ import * as schema from "@/lib/schema";
 import { Resend } from "resend";
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, { provider: "sqlite", schema, }),
+  database: drizzleAdapter(db, { provider: "sqlite", schema }),
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url, token }) => {
@@ -21,8 +21,8 @@ export const auth = betterAuth({
           <p><a href="${url}">${url}</a></p>
           <p>If you did not request this, you can ignore this email.</p>
         `,
-      })
-    }
+      });
+    },
   },
   user: {
     additionalFields: {
@@ -35,9 +35,11 @@ export const auth = betterAuth({
         type: "string",
         required: true,
         input: true,
-      }
-    }
+      },
+    },
   },
   plugins: [username()],
+  baseURL: {
+    allowedHosts: ["localhost:3000", "sit2gether.cjuy.dev"],
+  },
 });
-
