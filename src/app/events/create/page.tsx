@@ -1,9 +1,11 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BannerUpload from "../BannerUpload";
 import DescriptionImageUpload from "../DescriptionImageUpload";
+
+interface AdminOrg { id: string; name: string; abbreviation: string; logo: string | null; }
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -14,6 +16,14 @@ export default function CreateEventPage() {
   const [descImages, setDescImages] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [adminOrgs, setAdminOrgs] = useState<AdminOrg[]>([]);
+  const [hostAs, setHostAs] = useState<"self" | string>("self"); // "self" or org.id
+
+  useEffect(() => {
+    fetch("/api/user/admin-orgs")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: unknown) => { if (Array.isArray(data)) setAdminOrgs(data as AdminOrg[]); });
+  }, []);
 
   function addTag(raw: string) {
     const trimmed = raw.trim().toLowerCase();
@@ -51,6 +61,7 @@ export default function CreateEventPage() {
       return;
     }
 
+    const selectedOrg = hostAs !== "self" ? adminOrgs.find((o) => o.id === hostAs) : null;
     const data = {
       userId: session?.user?.id,
       eventTitle: get("eventTitle"),
@@ -59,9 +70,10 @@ export default function CreateEventPage() {
       eventStartTime,
       eventEndTime,
       eventDesc: (form.elements.namedItem("eventDesc") as HTMLTextAreaElement).value,
-      eventHost: get("eventHost"),
+      eventHost: selectedOrg ? selectedOrg.name : (session?.user?.name ?? ""),
       eventLoc: get("eventLoc"),
       maxParticipants,
+      orgId: selectedOrg?.id ?? null,
       eventTags: tags.length > 0 ? JSON.stringify(tags) : null,
       eventBanner,
       eventImages: descImages.length > 0 ? JSON.stringify(descImages) : null,
@@ -88,7 +100,6 @@ export default function CreateEventPage() {
 
   const inputClass = "w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]";
   const labelClass = "font-semibold text-sm block mb-1 text-[#3758BF]";
-  const defaultHost = session?.user?.name ?? "";
 
   return (
     <main className="min-h-screen bg-background flex items-start justify-center py-12 px-6">
@@ -141,9 +152,18 @@ export default function CreateEventPage() {
           </div>
 
           <div>
-            <label htmlFor="eventHost" className={labelClass}>Host</label>
-            <input id="eventHost" name="eventHost" type="text" required value={defaultHost} readOnly
-              className={`${inputClass} opacity-60 cursor-not-allowed`} />
+            <label className={labelClass}>Host As</label>
+            {adminOrgs.length === 0 ? (
+              <input type="text" readOnly value={session?.user?.name ?? ""}
+                className={`${inputClass} opacity-60 cursor-not-allowed`} />
+            ) : (
+              <select value={hostAs} onChange={(e) => setHostAs(e.target.value)} className={inputClass}>
+                <option value="self">{session?.user?.name ?? "Yourself"}</option>
+                {adminOrgs.map((o) => (
+                  <option key={o.id} value={o.id}>{o.name} ({o.abbreviation})</option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>

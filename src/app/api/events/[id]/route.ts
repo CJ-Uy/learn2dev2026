@@ -26,12 +26,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const {
     eventTitle, eventStartDate, eventEndDate, eventStartTime, eventEndTime,
-    eventDesc, eventLoc, maxParticipants, eventTags, eventBanner, eventImages,
+    eventDesc, eventHost, eventLoc, maxParticipants, orgId, eventTags, eventBanner, eventImages,
   } = await req.json() as {
     eventTitle: string; eventStartDate: string; eventEndDate?: string;
     eventStartTime: string; eventEndTime: string; eventDesc?: string;
-    eventLoc: string; maxParticipants?: number;
-    eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
+    eventHost?: string; eventLoc: string; maxParticipants?: number;
+    orgId?: string | null; eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
   };
 
   if (!eventTitle || !eventStartDate || !eventStartTime || !eventEndTime || !eventLoc) {
@@ -46,7 +46,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       eventStartTime,
       eventEndTime,
       eventDesc: eventDesc ?? null,
+      eventHost: eventHost ?? event.eventHost,
       eventLoc,
+      orgId: orgId ?? null,
       maxParticipants: maxParticipants ?? null,
       eventTags: eventTags ?? null,
       eventBanner: eventBanner ?? null,

@@ -14,12 +14,12 @@ export async function POST(req: NextRequest) {
 
   const {
     eventTitle, eventStartDate, eventEndDate, eventStartTime, eventEndTime,
-    eventDesc, eventHost, eventLoc, maxParticipants, eventTags, eventBanner, eventImages,
+    eventDesc, eventHost, eventLoc, maxParticipants, orgId, eventTags, eventBanner, eventImages,
   } = await req.json() as {
     eventTitle: string; eventStartDate: string; eventEndDate?: string;
     eventStartTime: string; eventEndTime: string; eventDesc?: string;
     eventHost: string; eventLoc: string; maxParticipants?: number;
-    eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
+    orgId?: string | null; eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
   };
 
   if (!eventTitle || !eventStartDate || !eventStartTime || !eventEndTime || !eventHost || !eventLoc) {
@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
     await db.insert(events).values({
       id,
       userId: session.user.id,
+      orgId: orgId ?? null,
       eventTitle,
       eventStartDate,
       eventEndDate: eventEndDate ?? null,

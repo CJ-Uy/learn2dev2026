@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import BannerUpload from "../../BannerUpload";
 import DescriptionImageUpload from "../../DescriptionImageUpload";
 
+interface AdminOrg { id: string; name: string; abbreviation: string; logo: string | null; }
+
 export default function EditEventPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -13,6 +15,8 @@ export default function EditEventPage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState("");
+  const [adminOrgs, setAdminOrgs] = useState<AdminOrg[]>([]);
+  const [hostAs, setHostAs] = useState<"self" | string>("self");
   const [fields, setFields] = useState({
     eventTitle: "",
     eventStartDate: "",
@@ -29,13 +33,19 @@ export default function EditEventPage() {
   const [descImages, setDescImages] = useState<string[]>([]);
 
   useEffect(() => {
+    fetch("/api/user/admin-orgs")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: unknown) => { if (Array.isArray(data)) setAdminOrgs(data as AdminOrg[]); });
+  }, []);
+
+  useEffect(() => {
     fetch(`/api/all_events/${id}`)
       .then((r) => { if (!r.ok) throw new Error("Event not found"); return r.json(); })
       .then((raw) => {
         const event = raw as {
           eventTitle: string; eventStartDate: string; eventEndDate?: string;
           eventStartTime: string; eventEndTime: string; eventDesc?: string;
-          eventLoc: string; maxParticipants?: number;
+          eventLoc: string; maxParticipants?: number; orgId?: string | null;
           eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
         };
         setFields({
@@ -48,6 +58,7 @@ export default function EditEventPage() {
           eventLoc: event.eventLoc ?? "",
           maxParticipants: event.maxParticipants ?? "",
         });
+        setHostAs(event.orgId ?? "self");
         setTags(event.eventTags ? JSON.parse(event.eventTags) : []);
         setEventBanner(event.eventBanner ?? null);
         setDescImages(event.eventImages ? JSON.parse(event.eventImages) : []);
@@ -93,6 +104,8 @@ export default function EditEventPage() {
       body: JSON.stringify({
         ...fields,
         eventEndDate: fields.eventEndDate || null,
+        eventHost: hostAs !== "self" ? (adminOrgs.find((o) => o.id === hostAs)?.name ?? fields.eventTitle) : session?.user?.name,
+        orgId: hostAs !== "self" ? hostAs : null,
         maxParticipants,
         eventTags: tags.length > 0 ? JSON.stringify(tags) : null,
         eventBanner,
@@ -173,9 +186,18 @@ export default function EditEventPage() {
           </div>
 
           <div>
-            <label className={labelClass}>Host</label>
-            <input type="text" readOnly value={session?.user?.name ?? ""}
-              className={`${inputClass} opacity-60 cursor-not-allowed`} />
+            <label className={labelClass}>Host As</label>
+            {adminOrgs.length === 0 ? (
+              <input type="text" readOnly value={session?.user?.name ?? ""}
+                className={`${inputClass} opacity-60 cursor-not-allowed`} />
+            ) : (
+              <select value={hostAs} onChange={(e) => setHostAs(e.target.value)} className={inputClass}>
+                <option value="self">{session?.user?.name ?? "Yourself"}</option>
+                {adminOrgs.map((o) => (
+                  <option key={o.id} value={o.id}>{o.name} ({o.abbreviation})</option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>

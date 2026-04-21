@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { events as eventSchema, eventRegistrations, user as userSchema } from "@/lib/schema";
+import { events as eventSchema, eventRegistrations, user as userSchema, organizations } from "@/lib/schema";
 import { eq, and } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -46,6 +46,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     .from(userSchema)
     .where(eq(userSchema.id, event.userId))
     .get();
+
+  const hostOrg = event.orgId
+    ? await db.select({ id: organizations.id, name: organizations.name, slug: organizations.slug, logo: organizations.logo, abbreviation: organizations.abbreviation })
+        .from(organizations).where(eq(organizations.id, event.orgId)).get()
+    : null;
 
   return (
     <div className="max-w-2xl mx-auto p-8">
@@ -104,11 +109,27 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           })()}
           <p>At {event.eventLoc}</p>
           <div className="flex items-center gap-2">
-            {hostUser?.image
-              ? <img src={hostUser.image} alt="host" className="w-6 h-6 rounded-full object-cover" />
-              : <div className="w-6 h-6 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-xs select-none shrink-0">{event.eventHost.charAt(0).toUpperCase()}</div>
-            }
-            <span>By {event.eventHost}</span>
+            {hostOrg ? (
+              <>
+                {hostOrg.logo
+                  ? <img src={hostOrg.logo} alt={hostOrg.name} className="w-6 h-6 rounded-full object-contain" />
+                  : <div className="w-6 h-6 rounded-full bg-[#3758BF]/10 flex items-center justify-center text-[#3758BF] font-black text-xs shrink-0">{hostOrg.abbreviation.charAt(0)}</div>
+                }
+                <Link href={`/orgs/${hostOrg.slug}`} className="hover:underline text-[#3758BF] font-semibold">
+                  {hostOrg.name}
+                </Link>
+              </>
+            ) : (
+              <>
+                {hostUser?.image
+                  ? <img src={hostUser.image} alt="host" className="w-6 h-6 rounded-full object-cover" />
+                  : <div className="w-6 h-6 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-xs select-none shrink-0">{event.eventHost.charAt(0).toUpperCase()}</div>
+                }
+                <Link href={`/profile/${hostUser?.username}`} className="hover:underline">
+                  {event.eventHost}
+                </Link>
+              </>
+            )}
           </div>
           {event.maxParticipants != null && (
             <p>{event.currentParticipants} / {event.maxParticipants} participants</p>
