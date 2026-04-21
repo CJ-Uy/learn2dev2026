@@ -17,6 +17,7 @@ interface Event {
   eventBanner?: string | null;
   currentParticipants: number;
   maxParticipants?: number | null;
+  orgId?: string | null;
 }
 
 function fmtTime(t: string) {
@@ -35,10 +36,44 @@ function fmtDateBadge(dateStr: string) {
   };
 }
 
+function EventCard({ event }: { event: Event }) {
+  const { month, day, weekday } = fmtDateBadge(event.eventStartDate);
+  return (
+    <Link href={`/events/${event.id}`} style={{ width: "350px", height: "288px" }} className="flex-none rounded-xl overflow-hidden border bg-white shadow-sm hover:shadow-md transition flex flex-col">
+      <div className="w-full shrink-0" style={{ height: "144px", backgroundColor: "#f063a0", overflow: "hidden" }}>
+        {event.eventBanner && (
+          <img src={event.eventBanner} alt="" style={{ width: "100%", height: "144px", objectFit: "cover", display: "block" }} />
+        )}
+      </div>
+      <div className="p-5 flex flex-col gap-0.5 overflow-hidden">
+        <p className="font-black text-[#3758BF] text-sm leading-tight line-clamp-2">{event.eventTitle}</p>
+        <p className="text-xs text-slate-500 font-semibold mt-1">{weekday}, {month} {day}</p>
+        <p className="text-xs text-slate-400">{fmtTime(event.eventStartTime)}</p>
+        <p className="text-xs text-slate-400 truncate">At {event.eventLoc}</p>
+        <p className="text-xs text-slate-400 truncate">By {event.eventHost}</p>
+      </div>
+    </Link>
+  );
+}
+
+function EventRow({ title, events }: { title: string; events: Event[] }) {
+  if (events.length === 0) return null;
+  return (
+    <div className="mt-10">
+      <h2 className="text-zpink font-extrabold text-2xl mb-4">{title}</h2>
+      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
+        {events.map((e) => <EventCard key={e.id} event={e} />)}
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { data: session } = authClient.useSession();
   const username = session?.user?.username;
   const [featured, setFeatured] = useState<Event[]>([]);
+  const [orgEvents, setOrgEvents] = useState<Event[]>([]);
+  const [studentEvents, setStudentEvents] = useState<Event[]>([]);
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
@@ -46,14 +81,19 @@ export default function HomePage() {
       .then((r) => (r.ok ? r.json() : []))
       .then((all: unknown) => {
         if (!Array.isArray(all)) return;
+        const evts = all as Event[];
         const today = new Date().toISOString().slice(0, 10);
-        const upcoming = (all as Event[]).filter((e) => e.eventStartDate >= today);
+        const upcoming = evts.filter((e) => e.eventStartDate >= today);
         upcoming.sort((a, b) => {
           const byParticipants = (b.currentParticipants ?? 0) - (a.currentParticipants ?? 0);
           if (byParticipants !== 0) return byParticipants;
           return a.eventStartDate.localeCompare(b.eventStartDate);
         });
         setFeatured(upcoming.slice(0, 10));
+
+        const byRecent = [...evts].sort((a, b) => b.eventStartDate.localeCompare(a.eventStartDate));
+        setOrgEvents(byRecent.filter((e) => e.orgId));
+        setStudentEvents(byRecent.filter((e) => !e.orgId));
       });
   }, []);
 
@@ -166,6 +206,9 @@ export default function HomePage() {
           )}
         </div>
       )}
+
+      <EventRow title="Org Events" events={orgEvents} />
+      <EventRow title="Student Events" events={studentEvents} />
     </div>
   );
 }
