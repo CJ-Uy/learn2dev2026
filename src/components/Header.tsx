@@ -30,10 +30,16 @@ export default function Header() {
 
       <div className="flex gap-4 items-center ml-auto">
         <Link
+          href="/events/my"
+          className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-[#3758BF] gap-2 hover:bg-[#969696] hover:text-[#22356e] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 px-5"
+        >
+          My Events
+        </Link>
+        <Link
           href="/events"
           className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-[#3758BF] gap-2 hover:bg-[#969696] hover:text-[#22356e] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 px-5"
         >
-          View All Events
+          All Events
         </Link>
 
         <Link href="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
