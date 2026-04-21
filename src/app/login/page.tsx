@@ -26,8 +26,7 @@ function LoginForm() {
             return;
         }
 
-        // change to home
-        router.push("/");
+        router.push("/events");
     }
 
     return (
