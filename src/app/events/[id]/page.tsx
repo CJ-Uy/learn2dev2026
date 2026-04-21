@@ -141,13 +141,15 @@ async function ParticipantsList({ eventId }: { eventId: string }) {
       <ul className="space-y-3">
         {participants.map((p) => (
           <li key={p.id} className="flex items-center gap-3">
-            {p.image
-              ? <img src={p.image} alt="avatar" className="w-9 h-9 rounded-full object-cover shrink-0" />
-              : <div className="w-9 h-9 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-sm select-none shrink-0">{p.name.charAt(0).toUpperCase()}</div>
-            }
+            <Link href={`/profile/${p.username}`}>
+              {p.image
+                ? <img src={p.image} alt="avatar" className="w-9 h-9 rounded-full object-cover shrink-0" />
+                : <div className="w-9 h-9 rounded-full bg-[#ffcf32] flex items-center justify-center text-[#3758BF] font-black text-sm select-none shrink-0">{p.name.charAt(0).toUpperCase()}</div>
+              }
+            </Link>
             <div>
-              <p className="font-semibold text-sm leading-tight">{p.name}</p>
-              <p className="text-xs text-slate-500">@{p.username}</p>
+              <Link href={`/profile/${p.username}`} className="font-semibold text-sm leading-tight text-[#253dac] hover:underline">{p.name}</Link>
+              <Link href={`/profile/${p.username}`} className="block text-xs text-slate-500 hover:underline">@{p.username}</Link>
             </div>
           </li>
         ))}

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
 interface CommentUser {
   id: string;
@@ -115,13 +116,13 @@ export default function CommentsSection({ eventId, hostId, participantIds, curre
         <Avatar name={name} image={c.user?.image} />
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-sm">{name}</span>
-            <span className="text-xs text-slate-400">@{username}</span>
+            <Link href={`/profile/${username}`} className="font-semibold text-sm hover:underline text-[#253dac]">{name}</Link>
+            <Link href={`/profile/${username}`} className="text-xs text-slate-400 hover:underline">@{username}</Link>
             <UserBadges userId={c.userId} hostId={hostId} participantIds={participantIds} />
             <span className="text-xs text-slate-400 ml-auto">{formatTime(c.createdAt)}</span>
           </div>
           {c.replyToUsername && (
-            <p className="text-xs text-[#3758BF] mb-1">↩ replying to @{c.replyToUsername}</p>
+            <p className="text-xs text-[#3758BF] mb-1">↩ replying to <Link href={`/profile/${c.replyToUsername}`} className="hover:underline">@{c.replyToUsername}</Link></p>
           )}
           <p className="text-sm text-slate-700 mt-0.5 whitespace-pre-wrap">{c.content}</p>
           {currentUserId && (
