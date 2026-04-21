@@ -20,7 +20,8 @@ interface Profile {
 interface Event {
   id: string;
   eventTitle: string;
-  eventDate: number;
+  eventStartDate: string;
+  eventStartTime: string;
   eventLoc: string;
   currentParticipants: number;
   maxParticipants: number | null;
@@ -34,14 +35,20 @@ interface Props {
 }
 
 function EventCard({ event }: { event: Event }) {
-  const d = new Date(event.eventDate);
+  const dateLabel = (() => {
+    const [y, m, d] = event.eventStartDate.split("-");
+    return new Date(+y, +m - 1, +d).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  })();
+  const timeLabel = (() => {
+    const [h, m] = event.eventStartTime.split(":");
+    const d = new Date(); d.setHours(+h, +m);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  })();
   return (
     <Link href={`/events/${event.id}`}
       className="border rounded-xl p-4 hover:shadow-md transition-shadow flex flex-col gap-1">
       <p className="font-bold text-[#3758BF] leading-tight">{event.eventTitle}</p>
-      <p className="text-sm text-slate-500">
-        {d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })} · {d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-      </p>
+      <p className="text-sm text-slate-500">{dateLabel} · {timeLabel}</p>
       <p className="text-sm text-slate-500">At {event.eventLoc}</p>
       {event.maxParticipants != null && (
         <p className="text-xs text-slate-400">{event.currentParticipants} / {event.maxParticipants} participants</p>
