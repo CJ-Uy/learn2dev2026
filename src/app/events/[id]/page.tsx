@@ -56,7 +56,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   return (
     <div className="max-w-4xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/events" className="text-pink-300 hover:text-pink-800">
+        <Link href="/events" className="font-bold text-pink-300 hover:text-pink-800">
           ← Back to all events
         </Link>
         {isHost && (
