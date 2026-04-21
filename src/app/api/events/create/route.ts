@@ -4,14 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+export const config = { api: { bodyParser: { sizeLimit: "20mb" } } };
+
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { eventTitle, eventDate, eventDesc, eventDur, eventHost, eventLoc, maxParticipants } =
-    await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventHost: string; eventLoc: string; maxParticipants?: number };
+  const { eventTitle, eventDate, eventDesc, eventDur, eventHost, eventLoc, maxParticipants, eventBanner, eventImages } =
+    await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventHost: string; eventLoc: string; maxParticipants?: number; eventBanner?: string | null; eventImages?: string | null };
 
   if (!eventTitle || !eventDate || !eventHost || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -30,6 +32,8 @@ export async function POST(req: NextRequest) {
       eventHost,
       eventLoc,
       maxParticipants: maxParticipants ?? null,
+      eventBanner: eventBanner ?? null,
+      eventImages: eventImages ?? null,
     });
   } catch (err) {
     console.error("Failed to insert event:", err);

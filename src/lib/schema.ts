@@ -105,6 +105,8 @@ export const events = sqliteTable("events", {
 	eventLoc: text("event_loc").notNull(),
 	currentParticipants: integer("current_participants").default(0).notNull(),
 	maxParticipants: integer("max_participants"),
+	eventBanner: text("event_banner"),
+	eventImages: text("event_images"), // JSON: string[]
 });
 
 export const eventRegistrations = sqliteTable("event_registrations", {

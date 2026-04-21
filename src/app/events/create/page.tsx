@@ -2,12 +2,16 @@
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import BannerUpload from "../BannerUpload";
+import DescriptionImageUpload from "../DescriptionImageUpload";
 
 export default function CreateEventPage() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [eventBanner, setEventBanner] = useState<string | null>(null);
+  const [descImages, setDescImages] = useState<string[]>([]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,6 +30,8 @@ export default function CreateEventPage() {
       eventHost: (form.elements.namedItem("eventHost") as HTMLInputElement).value,
       eventLoc: (form.elements.namedItem("eventLoc") as HTMLInputElement).value,
       maxParticipants,
+      eventBanner,
+      eventImages: descImages.length > 0 ? JSON.stringify(descImages) : null,
     };
 
     if (new Date(data.eventDate) < new Date()) {
@@ -72,6 +78,11 @@ export default function CreateEventPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
+            <label className="font-semibold text-sm block mb-1 text-[#3758BF]">Event Banner <span className="text-slate-400 font-normal">(optional)</span></label>
+            <BannerUpload current={null} onChange={setEventBanner} />
+          </div>
+
+          <div>
             <label htmlFor="eventTitle" className="font-semibold text-sm block mb-1 text-[#3758BF]">Event Title</label>
             <input id="eventTitle" name="eventTitle" type="text" required placeholder="e.g. Study Group – Finals Week"
               className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
@@ -113,6 +124,11 @@ export default function CreateEventPage() {
             <label htmlFor="eventDesc" className="font-semibold text-sm block mb-1 text-[#3758BF]">Description <span className="text-slate-400 font-normal">(optional)</span></label>
             <textarea id="eventDesc" name="eventDesc" rows={3} placeholder="What's this event about?"
               className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF] resize-none" />
+          </div>
+
+          <div>
+            <label className="font-semibold text-sm block mb-1 text-[#3758BF]">Description Images <span className="text-slate-400 font-normal">(optional, up to 5)</span></label>
+            <DescriptionImageUpload images={descImages} onChange={setDescImages} />
           </div>
 
           {error && (

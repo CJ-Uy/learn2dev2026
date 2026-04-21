@@ -2,6 +2,8 @@
 import { authClient } from "@/lib/auth-client";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import BannerUpload from "../../BannerUpload";
+import DescriptionImageUpload from "../../DescriptionImageUpload";
 
 export default function EditEventPage() {
   const router = useRouter();
@@ -19,12 +21,18 @@ export default function EditEventPage() {
     eventLoc: "",
     maxParticipants: "" as string | number,
   });
+  const [eventBanner, setEventBanner] = useState<string | null>(null);
+  const [descImages, setDescImages] = useState<string[]>([]);
 
   useEffect(() => {
     fetch(`/api/all_events/${id}`)
       .then((r) => { if (!r.ok) throw new Error("Event not found"); return r.json(); })
       .then((raw) => {
-        const event = raw as { eventDate: number; eventTitle: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number };
+        const event = raw as {
+          eventDate: number; eventTitle: string; eventDesc?: string;
+          eventDur?: number; eventLoc: string; maxParticipants?: number;
+          eventBanner?: string | null; eventImages?: string | null;
+        };
         const d = new Date(event.eventDate);
         const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
           .toISOString()
@@ -37,6 +45,8 @@ export default function EditEventPage() {
           eventLoc: event.eventLoc ?? "",
           maxParticipants: event.maxParticipants ?? "",
         });
+        setEventBanner(event.eventBanner ?? null);
+        setDescImages(event.eventImages ? JSON.parse(event.eventImages) : []);
       })
       .catch((e) => setError(e.message))
       .finally(() => setFetching(false));
@@ -67,7 +77,12 @@ export default function EditEventPage() {
     const res = await fetch(`/api/events/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...fields, maxParticipants }),
+      body: JSON.stringify({
+        ...fields,
+        maxParticipants,
+        eventBanner,
+        eventImages: descImages.length > 0 ? JSON.stringify(descImages) : null,
+      }),
     });
 
     setLoading(false);
@@ -93,6 +108,11 @@ export default function EditEventPage() {
         <p className="text-slate-500 mb-8">Update the details for your event.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div>
+            <label className={labelClass}>Event Banner <span className="text-slate-400 font-normal">(optional)</span></label>
+            <BannerUpload current={eventBanner} onChange={setEventBanner} />
+          </div>
+
           <div>
             <label className={labelClass}>Event Title</label>
             <input type="text" required className={inputClass}
@@ -141,6 +161,11 @@ export default function EditEventPage() {
             <textarea rows={3} className={`${inputClass} resize-none`}
               value={fields.eventDesc}
               onChange={(e) => setFields({ ...fields, eventDesc: e.target.value })} />
+          </div>
+
+          <div>
+            <label className={labelClass}>Description Images <span className="text-slate-400 font-normal">(optional, up to 5)</span></label>
+            <DescriptionImageUpload images={descImages} onChange={setDescImages} />
           </div>
 
           {error && (

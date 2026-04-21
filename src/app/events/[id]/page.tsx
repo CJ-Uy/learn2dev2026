@@ -63,7 +63,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         )}
       </div>
 
-      <div className="bg-white border rounded-xl p-8 shadow-sm">
+      <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+        {event.eventBanner && (
+          <img src={event.eventBanner} alt="Event banner" className="w-full max-h-64 object-cover" />
+        )}
+        <div className="p-8">
         <h1 className="text-4xl font-bold mb-4 text-[#3758BF]">{event.eventTitle}</h1>
 
         <div className="flex flex-wrap gap-4 mb-6 text-gray-600">
@@ -101,6 +105,17 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
             {event.eventDesc || "No description provided."}
           </p>
+          {event.eventImages && (() => {
+            let imgs: string[] = [];
+            try { imgs = JSON.parse(event.eventImages); } catch { return null; }
+            return imgs.length > 0 ? (
+              <div className="flex flex-wrap gap-3 mt-4 not-prose">
+                {imgs.map((src, i) => (
+                  <img key={i} src={src} alt={`Event image ${i + 1}`} className="rounded-lg max-h-60 object-cover" />
+                ))}
+              </div>
+            ) : null;
+          })()}
         </div>
 
         {!isHost && session && (
@@ -124,6 +139,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           participantIds={participantIds}
           currentUserId={session?.user?.id ?? null}
         />
+        </div>
       </div>
     </div>
   );

@@ -70,7 +70,10 @@ export default function AllEventsPage() {
         {events.map((event) => (
           <div
             key={event.id}
-            className={`border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col bg-[#f063a097] ${overdue ? "opacity-60" : ""}`}
+            className={`border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col ${overdue ? "opacity-60" : ""}`}
+            style={event.eventBanner
+              ? { backgroundImage: `linear-gradient(rgba(55, 88, 191, 0.45), rgba(55, 88, 191, 0.45)), url(${event.eventBanner})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              : { backgroundColor: '#f063a097' }}
           >
             <h2 className="text-xl font-semibold mb-2">{event.eventTitle}</h2>
             <p className="text-gray-600 mb-4 grow line-clamp-2">

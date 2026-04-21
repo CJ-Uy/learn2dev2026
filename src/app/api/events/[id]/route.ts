@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+export const config = { api: { bodyParser: { sizeLimit: "20mb" } } };
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
@@ -22,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { eventTitle, eventDate, eventDesc, eventDur, eventLoc, maxParticipants } = await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number };
+  const { eventTitle, eventDate, eventDesc, eventDur, eventLoc, maxParticipants, eventBanner, eventImages } = await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number; eventBanner?: string | null; eventImages?: string | null };
 
   if (!eventTitle || !eventDate || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -36,6 +38,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       eventDur: eventDur ?? 30,
       eventLoc,
       maxParticipants: maxParticipants ?? null,
+      eventBanner: eventBanner ?? null,
+      eventImages: eventImages ?? null,
     }).where(eq(events.id, id));
   } catch (err) {
     console.error("Failed to update event:", err);
