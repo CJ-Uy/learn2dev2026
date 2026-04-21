@@ -64,12 +64,12 @@ export default function MyEventsPage() {
             key={event.id}
             className={`border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col ${overdue ? 'opacity-60' : ''}`}
             style={event.eventBanner
-              ? { backgroundImage: `linear-gradient(rgba(55, 88, 191, 0.45), rgba(55, 88, 191, 0.45)), url(${event.eventBanner})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              ? { backgroundImage: `linear-gradient(rgba(30, 50, 130, 0.7), rgba(30, 50, 130, 0.7)), url(${event.eventBanner})`, backgroundSize: 'cover', backgroundPosition: 'center' }
               : { backgroundColor: '#f063a097' }}
           >
-            <h2 className="text-xl font-semibold mb-2">{event.eventTitle}</h2>
-            <p className="text-gray-600 mb-4 grow line-clamp-2">{event.eventDesc}</p>
-            <div className="text-sm text-gray-500 mb-4">
+            <h2 className="text-xl font-bold text-white mb-2">{event.eventTitle}</h2>
+            <p className="text-white/80 mb-4 grow line-clamp-2">{event.eventDesc}</p>
+            <div className="text-sm text-white/70 mb-4">
               <p>{formatDate(event.eventStartDate)}{event.eventEndDate && event.eventEndDate !== event.eventStartDate ? ` – ${formatDate(event.eventEndDate)}` : ''}</p>
               <p>{formatTime(event.eventStartTime)} – {formatTime(event.eventEndTime)}</p>
             </div>
@@ -79,22 +79,22 @@ export default function MyEventsPage() {
                 return tagList.length > 0 ? (
                   <div className="flex flex-wrap gap-1 mb-3">
                     {tagList.map((tag) => (
-                      <span key={tag} className="bg-white/30 text-xs font-semibold rounded-full px-2 py-0.5">{tag}</span>
+                      <span key={tag} className="bg-white/30 text-white text-xs font-semibold rounded-full px-2 py-0.5">{tag}</span>
                     ))}
                   </div>
                 ) : null;
               } catch { return null; }
             })()}
-            <p>At {event.eventLoc}</p>
-            <p>By {event.eventHost}</p>
+            <p className="text-white/90">At {event.eventLoc}</p>
+            <p className="text-white/90">By {event.eventHost}</p>
             {event.maxParticipants != null && (
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-white/70 mt-1">
                 {event.currentParticipants ?? 0} / {event.maxParticipants} participants
               </p>
             )}
             <div className="flex items-center gap-4 mt-2">
               <Link href={`/events/${event.id}`}
-                className="text-pink-300 font-medium hover:text-pink-800 text-sm inline-flex items-center">
+                className="text-[#F8DE59] font-medium hover:text-white text-sm inline-flex items-center">
                 View Details
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -102,7 +102,7 @@ export default function MyEventsPage() {
               </Link>
               {event.userId === userId && (
                 <Link href={`/events/${event.id}/edit`}
-                  className="text-[#3758BF] font-medium text-sm hover:underline">
+                  className="text-white font-medium text-sm hover:underline">
                   Edit
                 </Link>
               )}
