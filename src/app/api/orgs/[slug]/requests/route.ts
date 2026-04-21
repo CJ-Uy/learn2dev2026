@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { organizations, orgMemberships, user as userSchema } from "@/lib/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -28,11 +28,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
 
   const requests = await db
     .select({
-      id: orgMemberships.id,
+      id: sql<string>`${orgMemberships.id}`.as("membership_id"),
       role: orgMemberships.role,
       status: orgMemberships.status,
       requestedAt: orgMemberships.requestedAt,
-      userId: userSchema.id,
+      userId: sql<string>`${userSchema.id}`.as("user_id"),
       name: userSchema.name,
       username: userSchema.username,
       image: userSchema.image,

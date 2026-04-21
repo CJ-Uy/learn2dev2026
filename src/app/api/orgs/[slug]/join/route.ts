@@ -14,22 +14,28 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   if (!org) return NextResponse.json({ error: "Org not found" }, { status: 404 });
 
   const existing = await db
-    .select()
+    .select({ id: orgMemberships.id })
     .from(orgMemberships)
     .where(and(eq(orgMemberships.orgId, org.id), eq(orgMemberships.userId, session.user.id), eq(orgMemberships.role, "member")))
-    .get();
+    .all();
 
-  if (existing) {
+  if (existing.length > 0) {
     return NextResponse.json({ error: "Already requested or a member" }, { status: 409 });
   }
 
-  await db.insert(orgMemberships).values({
-    id: crypto.randomUUID(),
-    orgId: org.id,
-    userId: session.user.id,
-    role: "member",
-    status: "pending",
-  });
+  try {
+    await db.insert(orgMemberships).values({
+      id: crypto.randomUUID(),
+      orgId: org.id,
+      userId: session.user.id,
+      role: "member",
+      status: "pending",
+    });
+    console.log("[join] insert succeeded");
+  } catch (e) {
+    console.error("[join] insert failed:", e);
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true }, { status: 201 });
 }

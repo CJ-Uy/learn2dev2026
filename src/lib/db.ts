@@ -49,17 +49,20 @@ async function d1Fetch(
   }
 
   const result = data.result?.[0];
-  if (!result?.results?.length) {
+  const resultRows = result?.results ?? [];
+
+  if (method === "get") {
+    if (resultRows.length === 0) return { rows: undefined as unknown as unknown[][] };
+    const cols = Object.keys(resultRows[0]);
+    return { rows: cols.map((col) => resultRows[0][col]) as unknown as unknown[][] };
+  }
+
+  if (resultRows.length === 0) {
     return { rows: [] };
   }
 
-  const cols = Object.keys(result.results[0]);
-  const rows = result.results.map((row) => cols.map((col) => row[col]));
-
-  if (method === "get") {
-    return { rows: rows[0] as unknown as unknown[][] };
-  }
-
+  const cols = Object.keys(resultRows[0]);
+  const rows = resultRows.map((row) => cols.map((col) => row[col]));
   return { rows };
 }
 

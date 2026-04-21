@@ -42,16 +42,29 @@ export default function OrgProfilePage() {
   const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionMsg, setActionMsg] = useState("");
+  const [myStatus, setMyStatus] = useState<{ member?: string; admin?: string }>({});
 
   const isOrgAdmin = members.some((m) => m.id === session?.user?.id && m.role === "admin");
   const isMember = members.some((m) => m.id === session?.user?.id);
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/orgs/${slug}`);
-    if (!res.ok) return;
-    const data = await res.json() as { org: Org; members: Member[] };
+    const [orgRes, myRes] = await Promise.all([
+      fetch(`/api/orgs/${slug}`),
+      fetch("/api/user/memberships"),
+    ]);
+    if (!orgRes.ok) return;
+    const data = await orgRes.json() as { org: Org; members: Member[] };
     setOrg(data.org);
     setMembers(data.members);
+    if (myRes.ok) {
+      type M = { orgSlug: string; role: string; status: string };
+      const mine: M[] = await myRes.json();
+      const forThis = mine.filter((m) => m.orgSlug === slug);
+      setMyStatus({
+        member: forThis.find((m) => m.role === "member")?.status,
+        admin: forThis.find((m) => m.role === "admin")?.status,
+      });
+    }
     setLoading(false);
   }, [slug]);
 
@@ -66,12 +79,14 @@ export default function OrgProfilePage() {
 
   async function handleJoin() {
     const res = await fetch(`/api/orgs/${slug}/join`, { method: "POST" });
-    setActionMsg(res.ok ? "Membership request sent!" : "Already requested or a member.");
+    if (res.ok) { setMyStatus((s) => ({ ...s, member: "pending" })); setActionMsg("Membership request sent!"); }
+    else setActionMsg("Already requested or a member.");
   }
 
   async function handleRequestAdmin() {
     const res = await fetch(`/api/orgs/${slug}/request-admin`, { method: "POST" });
-    setActionMsg(res.ok ? "Org admin request sent to platform admin." : "Already requested or an admin.");
+    if (res.ok) { setMyStatus((s) => ({ ...s, admin: "pending" })); setActionMsg("Org admin request sent to platform admin."); }
+    else setActionMsg("Already requested or an admin.");
   }
 
   async function handleMemberAction(membershipId: string, status: "approved" | "rejected") {
@@ -109,17 +124,23 @@ export default function OrgProfilePage() {
           {org.description && <p className="text-slate-600 text-sm mt-2">{org.description}</p>}
 
           <div className="flex flex-wrap gap-2 mt-4">
-            {!isMember && session && (
-              <button onClick={handleJoin}
-                className="rounded-full bg-[#3758BF] px-4 py-1.5 text-white text-sm font-bold hover:bg-[#2d47a0] transition">
-                Request Membership
-              </button>
+            {session && !isMember && (
+              myStatus.member === "pending"
+                ? <span className="rounded-full bg-yellow-100 px-4 py-1.5 text-yellow-700 text-sm font-bold">Membership Pending</span>
+                : myStatus.member === "approved" ? null
+                : <button onClick={handleJoin}
+                    className="rounded-full bg-[#3758BF] px-4 py-1.5 text-white text-sm font-bold hover:bg-[#2d47a0] transition">
+                    Request Membership
+                  </button>
             )}
-            {isMember && !isOrgAdmin && session && (
-              <button onClick={handleRequestAdmin}
-                className="rounded-full border border-[#3758BF] px-4 py-1.5 text-[#3758BF] text-sm font-bold hover:bg-[#3758BF]/10 transition">
-                Request Org Admin
-              </button>
+            {session && !isOrgAdmin && (
+              myStatus.admin === "pending"
+                ? <span className="rounded-full bg-yellow-100 px-4 py-1.5 text-yellow-700 text-sm font-bold">Admin Request Pending</span>
+                : myStatus.admin === "approved" ? null
+                : <button onClick={handleRequestAdmin}
+                    className="rounded-full border border-[#3758BF] px-4 py-1.5 text-[#3758BF] text-sm font-bold hover:bg-[#3758BF]/10 transition">
+                    Request Org Admin
+                  </button>
             )}
             {org.detailUrl && (
               <a href={org.detailUrl} target="_blank" rel="noopener noreferrer"

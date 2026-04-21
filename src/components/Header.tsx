@@ -10,6 +10,7 @@ export default function Header() {
 
   const displayName = session?.user?.name ?? "User";
   const username = (session?.user as { username?: string })?.username;
+  const isAdmin = (session?.user as { role?: string })?.role === "admin";
 
   return (
     <header className="bg-[#3758BF] h-[13vh] flex flex-row items-center px-4">
@@ -29,6 +30,14 @@ export default function Header() {
       </div>
 
       <div className="flex gap-4 items-center ml-auto">
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-[#ffcf32] text-black gap-2 hover:bg-[#f2d53a] font-bold text-sm sm:text-base h-10 px-5"
+          >
+            Admin
+          </Link>
+        )}
         <Link
           href="/orgs"
           className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-[#3758BF] gap-2 hover:bg-[#969696] hover:text-[#22356e] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 px-5"

@@ -36,7 +36,7 @@ export async function PATCH(
 
   await db.update(orgMemberships).set({
     status,
-    verifiedAt: Date.now(),
+    verifiedAt: new Date(),
     verifiedBy: session.user.id,
   }).where(and(eq(orgMemberships.id, membershipId), eq(orgMemberships.orgId, org.id)));
 

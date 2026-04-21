@@ -10,13 +10,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const me = await db.select({ role: userSchema.role }).from(userSchema)
-    .where(eq(userSchema.id, session.user.id)).get();
-
-  if (me?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    .where(eq(userSchema.id, session.user.id)).all();
+  if (!me.length || me[0].role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const { status } = await req.json() as { status: "approved" | "rejected" };
-
   if (status !== "approved" && status !== "rejected") {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { organizations, orgMemberships, user as userSchema } from "@/lib/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -11,13 +11,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
 
   const members = await db
     .select({
-      id: userSchema.id,
+      id: sql<string>`${userSchema.id}`.as("user_id"),
       name: userSchema.name,
       username: userSchema.username,
       displayUsername: userSchema.displayUsername,
       image: userSchema.image,
       role: orgMemberships.role,
-      membershipId: orgMemberships.id,
+      membershipId: sql<string>`${orgMemberships.id}`.as("membership_id"),
     })
     .from(orgMemberships)
     .innerJoin(userSchema, eq(orgMemberships.userId, userSchema.id))

@@ -201,11 +201,11 @@ export default function ProfileClient({ profile, hosting, attending, isOwn }: Pr
       </div>
 
       {/* Org Memberships (own profile only) */}
-      {isOwn && memberships.length > 0 && (
+      {isOwn && memberships.filter((m) => m.status !== "rejected").length > 0 && (
         <div className="bg-white border rounded-2xl shadow-sm p-6 mb-8">
           <h2 className="text-lg font-black text-zpink mb-4">Organizations</h2>
           <div className="flex flex-wrap gap-3">
-            {memberships.map((m) => (
+            {memberships.filter((m) => m.status !== "rejected").map((m) => (
               <Link key={m.id} href={`/orgs/${m.orgSlug}`}
                 className="flex items-center gap-2 border rounded-full px-3 py-1.5 hover:shadow-sm transition">
                 {m.orgLogo

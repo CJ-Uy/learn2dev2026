@@ -14,12 +14,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   if (!org) return NextResponse.json({ error: "Org not found" }, { status: 404 });
 
   const existing = await db
-    .select()
+    .select({ id: orgMemberships.id })
     .from(orgMemberships)
     .where(and(eq(orgMemberships.orgId, org.id), eq(orgMemberships.userId, session.user.id), eq(orgMemberships.role, "admin")))
-    .get();
+    .all();
 
-  if (existing) {
+  if (existing.length > 0) {
     return NextResponse.json({ error: "Already requested or an admin" }, { status: 409 });
   }
 

@@ -10,27 +10,23 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const me = await db.select({ role: userSchema.role }).from(userSchema)
-    .where(eq(userSchema.id, session.user.id)).get();
-
-  if (me?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    .where(eq(userSchema.id, session.user.id)).all();
+  if (!me.length || me[0].role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const requests = await db
     .select({
       id: sql<string>`${orgMemberships.id}`.as("membership_id"),
-      status: orgMemberships.status,
       requestedAt: orgMemberships.requestedAt,
-      userId: sql<string>`${userSchema.id}`.as("user_id"),
       name: userSchema.name,
       username: userSchema.username,
       image: userSchema.image,
-      orgId: sql<string>`${organizations.id}`.as("org_id"),
       orgName: sql<string>`${organizations.name}`.as("org_name"),
       orgSlug: sql<string>`${organizations.slug}`.as("org_slug"),
     })
     .from(orgMemberships)
     .innerJoin(userSchema, eq(orgMemberships.userId, userSchema.id))
     .innerJoin(organizations, eq(orgMemberships.orgId, organizations.id))
-    .where(and(eq(orgMemberships.role, "admin"), eq(orgMemberships.status, "pending")))
+    .where(and(eq(orgMemberships.role, "member"), eq(orgMemberships.status, "pending")))
     .all();
 
   return NextResponse.json(requests);
