@@ -24,20 +24,31 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { eventTitle, eventDate, eventDesc, eventDur, eventLoc, maxParticipants, eventBanner, eventImages } = await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number; eventBanner?: string | null; eventImages?: string | null };
+  const {
+    eventTitle, eventStartDate, eventEndDate, eventStartTime, eventEndTime,
+    eventDesc, eventLoc, maxParticipants, eventTags, eventBanner, eventImages,
+  } = await req.json() as {
+    eventTitle: string; eventStartDate: string; eventEndDate?: string;
+    eventStartTime: string; eventEndTime: string; eventDesc?: string;
+    eventLoc: string; maxParticipants?: number;
+    eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
+  };
 
-  if (!eventTitle || !eventDate || !eventLoc) {
+  if (!eventTitle || !eventStartDate || !eventStartTime || !eventEndTime || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   try {
     await db.update(events).set({
       eventTitle,
-      eventDate: new Date(eventDate).getTime(),
+      eventStartDate,
+      eventEndDate: eventEndDate ?? null,
+      eventStartTime,
+      eventEndTime,
       eventDesc: eventDesc ?? null,
-      eventDur: eventDur ?? 30,
       eventLoc,
       maxParticipants: maxParticipants ?? null,
+      eventTags: eventTags ?? null,
       eventBanner: eventBanner ?? null,
       eventImages: eventImages ?? null,
     }).where(eq(events.id, id));

@@ -12,10 +12,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { eventTitle, eventDate, eventDesc, eventDur, eventHost, eventLoc, maxParticipants, eventBanner, eventImages } =
-    await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventHost: string; eventLoc: string; maxParticipants?: number; eventBanner?: string | null; eventImages?: string | null };
+  const {
+    eventTitle, eventStartDate, eventEndDate, eventStartTime, eventEndTime,
+    eventDesc, eventHost, eventLoc, maxParticipants, eventTags, eventBanner, eventImages,
+  } = await req.json() as {
+    eventTitle: string; eventStartDate: string; eventEndDate?: string;
+    eventStartTime: string; eventEndTime: string; eventDesc?: string;
+    eventHost: string; eventLoc: string; maxParticipants?: number;
+    eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
+  };
 
-  if (!eventTitle || !eventDate || !eventHost || !eventLoc) {
+  if (!eventTitle || !eventStartDate || !eventStartTime || !eventEndTime || !eventHost || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
@@ -26,12 +33,15 @@ export async function POST(req: NextRequest) {
       id,
       userId: session.user.id,
       eventTitle,
-      eventDate: new Date(eventDate).getTime(),
+      eventStartDate,
+      eventEndDate: eventEndDate ?? null,
+      eventStartTime,
+      eventEndTime,
       eventDesc: eventDesc ?? null,
-      eventDur: eventDur ?? 30,
       eventHost,
       eventLoc,
       maxParticipants: maxParticipants ?? null,
+      eventTags: eventTags ?? null,
       eventBanner: eventBanner ?? null,
       eventImages: eventImages ?? null,
     });

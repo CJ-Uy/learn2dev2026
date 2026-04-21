@@ -72,21 +72,36 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
         <div className="flex flex-wrap gap-4 mb-6 text-gray-600">
           <div className="flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {new Date(event.eventDate).toLocaleDateString(undefined, {
-              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-            })}
+            {(() => {
+              const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+              return event.eventEndDate && event.eventEndDate !== event.eventStartDate
+                ? `${fmt(event.eventStartDate)} – ${fmt(event.eventEndDate)}`
+                : fmt(event.eventStartDate);
+            })()}
           </div>
           <div className="flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {new Date(event.eventDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            <span className="mx-2">•</span>
-            {event.eventDur} minutes
+            {(() => {
+              const fmt = (t: string) => { const [h,m] = t.split(':'); const d = new Date(); d.setHours(+h,+m); return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); };
+              return `${fmt(event.eventStartTime)} – ${fmt(event.eventEndTime)}`;
+            })()}
           </div>
+          {event.eventTags && (() => {
+            let tagList: string[] = [];
+            try { tagList = JSON.parse(event.eventTags); } catch { return null; }
+            return tagList.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {tagList.map((tag) => (
+                  <span key={tag} className="bg-[#F8EACD] text-amber-950 text-xs font-semibold rounded-full px-3 py-1">{tag}</span>
+                ))}
+              </div>
+            ) : null;
+          })()}
           <p>At {event.eventLoc}</p>
           <div className="flex items-center gap-2">
             {hostUser?.image
@@ -122,7 +137,8 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <RegisterButton
             eventId={id}
             eventTitle={event.eventTitle}
-            eventDate={event.eventDate}
+            eventStartDate={event.eventStartDate}
+            eventStartTime={event.eventStartTime}
             eventLoc={event.eventLoc}
             isFull={event.maxParticipants !== null && event.currentParticipants >= event.maxParticipants}
             initialRegistered={isRegistered}

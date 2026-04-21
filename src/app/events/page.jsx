@@ -32,35 +32,30 @@ export default function AllEventsPage() {
     fetchEvents();
   }, []);
 
-  const formatDate = (dateValue) => {
-    try {
-      const d = new Date(dateValue);
-      if (isNaN(d.getTime())) return 'Invalid Date';
-      return d.toLocaleDateString();
-    } catch (e) {
-      return 'Invalid Date';
-    }
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-');
+    return new Date(Number(year), Number(month) - 1, Number(day))
+      .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const formatTime = (dateValue) => {
-    try {
-      const d = new Date(dateValue);
-      if (isNaN(d.getTime())) return 'Invalid Time';
-      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch (e) {
-      return 'Invalid Time';
-    }
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(':');
+    const d = new Date();
+    d.setHours(Number(h), Number(m));
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   if (loading) return <div className="p-8 text-center">Loading events...</div>;
   if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
 
-  const now = Date.now();
+  const today = new Date().toISOString().slice(0, 10);
   const userId = session?.user?.id;
 
-  const yourEvents = events.filter((e) => e.userId === userId && e.eventDate >= now);
-  const overdueEvents = events.filter((e) => e.eventDate < now);
-  const allUpcoming = events.filter((e) => e.eventDate >= now);
+  const yourEvents = events.filter((e) => e.userId === userId && e.eventStartDate >= today);
+  const overdueEvents = events.filter((e) => e.eventStartDate < today);
+  const allUpcoming = events.filter((e) => e.eventStartDate >= today);
 
   function EventGrid({ events, overdue = false }) {
     return events.length === 0 ? (
@@ -79,12 +74,22 @@ export default function AllEventsPage() {
             <p className="text-gray-600 mb-4 grow line-clamp-2">
               {event.eventDesc}
             </p>
-            <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-              <span>
-                <p>{formatDate(event.eventDate)}</p>
-                <p>{formatTime(event.eventDate)}</p>
-              </span>
+            <div className="text-sm text-gray-500 mb-4">
+              <p>{formatDate(event.eventStartDate)}{event.eventEndDate && event.eventEndDate !== event.eventStartDate ? ` – ${formatDate(event.eventEndDate)}` : ''}</p>
+              <p>{formatTime(event.eventStartTime)} – {formatTime(event.eventEndTime)}</p>
             </div>
+            {event.eventTags && (() => {
+              try {
+                const tagList = JSON.parse(event.eventTags);
+                return tagList.length > 0 ? (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {tagList.map((tag) => (
+                      <span key={tag} className="bg-white/30 text-xs font-semibold rounded-full px-2 py-0.5">{tag}</span>
+                    ))}
+                  </div>
+                ) : null;
+              } catch { return null; }
+            })()}
             <p>At {event.eventLoc}</p>
             <p>By {event.eventHost}</p>
             {event.maxParticipants != null && (
