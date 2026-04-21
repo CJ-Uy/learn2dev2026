@@ -87,11 +87,10 @@ export default function MyEventsPage() {
             })()}
             <p className="text-white/90">At {event.eventLoc}</p>
             <p className="text-white/90">By {event.eventHost}</p>
-            {event.maxParticipants != null && (
-              <p className="text-sm text-white/70 mt-1">
-                {event.currentParticipants ?? 0} / {event.maxParticipants} participants
-              </p>
-            )}
+            <p className="text-sm text-white/70 mt-1">
+              {event.currentParticipants ?? 0}{event.maxParticipants != null ? ` / ${event.maxParticipants}` : ""}{" "}
+              participants
+            </p>
             <div className="flex items-center gap-4 mt-2">
               <Link href={`/events/${event.id}`}
                 className="text-[#F8DE59] font-medium hover:text-white text-sm inline-flex items-center">
@@ -116,20 +115,20 @@ export default function MyEventsPage() {
   return (
     <div className="max-w-4xl mx-auto p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">My Events</h1>
+        <h1 className="text-3xl font-bold text-5xl font-extrabold text-[#3758BF]">My Events</h1>
         <Link href="/events/create"
           className="rounded-2xl bg-[#3758BF] px-6 py-2 text-white font-bold transition duration-200 hover:bg-[#2d47a0] hover:shadow-md">
           + Create Event
         </Link>
       </div>
 
-      <h2 className="text-xl font-bold mb-4">Your Events</h2>
+      <h2 className="text-xl font-bold mb-4 text-zpink">Your Events</h2>
       <EventGrid events={yourUpcoming} />
 
-      <h2 className="text-xl font-bold mt-10 mb-4">Attending</h2>
+      <h2 className="text-xl font-bold mt-10 mb-4 text-zpink">Attending</h2>
       <EventGrid events={attendingEvents} />
 
-      <h2 className="text-xl font-bold mt-10 mb-4">Your Past Events</h2>
+      <h2 className="text-xl font-bold mt-10 mb-4 text-zpink">Your Past Events</h2>
       <EventGrid events={yourPast} overdue />
     </div>
   );

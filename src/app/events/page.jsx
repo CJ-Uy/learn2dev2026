@@ -77,12 +77,10 @@ export default function AllEventsPage() {
             })()}
             <p className="text-white/90">At {event.eventLoc}</p>
             <p className="text-white/90">By {event.eventHost}</p>
-            {event.maxParticipants != null && (
-              <p className="text-sm text-white/70 mt-1">
-                {event.currentParticipants ?? 0} / {event.maxParticipants}{" "}
-                participants
-              </p>
-            )}
+            <p className="text-sm text-white/70 mt-1">
+              {event.currentParticipants ?? 0}{event.maxParticipants != null ? ` / ${event.maxParticipants}` : ""}{" "}
+              participants
+            </p>
             <div className="flex items-center gap-4 mt-2">
               <Link
                 href={`/events/${event.id}`}
@@ -121,7 +119,7 @@ export default function AllEventsPage() {
   return (
     <div className="max-w-4xl mx-auto p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Events</h1>
+        <h1 className="text-5xl font-extrabold text-[#3758BF]">Events</h1>
         <Link
           href="/events/create"
           className="rounded-2xl bg-[#3758BF] px-6 py-2 text-white font-bold transition duration-200 hover:bg-[#2d47a0] hover:shadow-md"
@@ -130,10 +128,10 @@ export default function AllEventsPage() {
         </Link>
       </div>
 
-      <h2 className="text-xl font-bold mb-4">All Events</h2>
+      <h2 className="text-xl font-bold mb-4 text-zpink">All Events</h2>
       <EventGrid events={allUpcoming} />
 
-      <h2 className="text-xl font-bold mt-10 mb-4">Past Events</h2>
+      <h2 className="text-xl font-bold mt-10 mb-4 text-zpink">Past Events</h2>
       <EventGrid events={overdueEvents} overdue />
     </div>
   );

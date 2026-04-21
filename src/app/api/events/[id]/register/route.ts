@@ -13,7 +13,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const event = await db.select().from(events).where(eq(events.id, id)).get();
 
   if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
-  if (event.userId === session.user.id) return NextResponse.json({ error: "You cannot register for your own event" }, { status: 400 });
+  if (!event.orgId && event.userId === session.user.id) return NextResponse.json({ error: "You cannot register for your own event" }, { status: 400 });
 
   const existing = await db.select({ id: eventRegistrations.id }).from(eventRegistrations)
     .where(and(eq(eventRegistrations.eventId, id), eq(eventRegistrations.userId, session.user.id)))

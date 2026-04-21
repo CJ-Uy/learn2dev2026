@@ -24,7 +24,8 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
   if (!event) notFound();
 
-  const isHost = session?.user?.id === event.userId;
+  const isCreator = session?.user?.id === event.userId;
+  const isHost = isCreator;
 
   const allRegistrations = await db
     .select({ userId: eventRegistrations.userId })
@@ -131,9 +132,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               </>
             )}
           </div>
-          {event.maxParticipants != null && (
-            <p>{event.currentParticipants} / {event.maxParticipants} participants</p>
-          )}
+          <p>{event.currentParticipants}{event.maxParticipants != null ? ` / ${event.maxParticipants}` : ""} participants</p>
         </div>
 
         <div className="prose max-w-none mb-8">
@@ -154,7 +153,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           })()}
         </div>
 
-        {!isHost && session && (
+        {(!isHost || !!event.orgId) && session && (
           <RegisterButton
             eventId={id}
             eventTitle={event.eventTitle}
