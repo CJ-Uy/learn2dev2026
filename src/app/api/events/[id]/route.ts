@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+export const config = { api: { bodyParser: { sizeLimit: "20mb" } } };
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
@@ -22,20 +24,35 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { eventTitle, eventDate, eventDesc, eventDur, eventLoc, maxParticipants } = await req.json() as { eventTitle: string; eventDate: string; eventDesc?: string; eventDur?: number; eventLoc: string; maxParticipants?: number };
+  const {
+    eventTitle, eventStartDate, eventEndDate, eventStartTime, eventEndTime,
+    eventDesc, eventHost, eventLoc, maxParticipants, orgId, eventTags, eventBanner, eventImages,
+  } = await req.json() as {
+    eventTitle: string; eventStartDate: string; eventEndDate?: string;
+    eventStartTime: string; eventEndTime: string; eventDesc?: string;
+    eventHost?: string; eventLoc: string; maxParticipants?: number;
+    orgId?: string | null; eventTags?: string | null; eventBanner?: string | null; eventImages?: string | null;
+  };
 
-  if (!eventTitle || !eventDate || !eventLoc) {
+  if (!eventTitle || !eventStartDate || !eventStartTime || !eventEndTime || !eventLoc) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   try {
     await db.update(events).set({
       eventTitle,
-      eventDate: new Date(eventDate).getTime(),
+      eventStartDate,
+      eventEndDate: eventEndDate ?? null,
+      eventStartTime,
+      eventEndTime,
       eventDesc: eventDesc ?? null,
-      eventDur: eventDur ?? 30,
+      eventHost: eventHost ?? event.eventHost,
       eventLoc,
+      orgId: orgId ?? null,
       maxParticipants: maxParticipants ?? null,
+      eventTags: eventTags ?? null,
+      eventBanner: eventBanner ?? null,
+      eventImages: eventImages ?? null,
     }).where(eq(events.id, id));
   } catch (err) {
     console.error("Failed to update event:", err);

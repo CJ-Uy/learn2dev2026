@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 interface Props {
   eventId: string;
   eventTitle: string;
-  eventDate: number;
+  eventStartDate: string;
+  eventStartTime: string;
   eventLoc: string;
   isFull: boolean;
   initialRegistered: boolean;
 }
 
-export default function RegisterButton({ eventId, eventTitle, eventDate, eventLoc, isFull, initialRegistered }: Props) {
+export default function RegisterButton({ eventId, eventTitle, eventStartDate, eventStartTime, eventLoc, isFull, initialRegistered }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [delistOpen, setDelistOpen] = useState(false);
@@ -58,8 +59,8 @@ export default function RegisterButton({ eventId, eventTitle, eventDate, eventLo
   const eventSummary = (
     <div className="bg-[#F8EACD] rounded-xl p-4 mb-6 space-y-1 text-sm text-amber-950">
       <p className="font-bold text-base">{eventTitle}</p>
-      <p>{new Date(eventDate).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
-      <p>{new Date(eventDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+      <p>{new Date(eventStartDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+      <p>{(() => { const [h,m] = eventStartTime.split(':'); const d = new Date(); d.setHours(+h,+m); return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); })()}</p>
       <p>At {eventLoc}</p>
     </div>
   );

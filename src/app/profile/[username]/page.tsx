@@ -20,8 +20,8 @@ export default async function ProfilePage({ params }: Props) {
 
   const { profile, hosting, attending } = await res.json() as {
     profile: { id: string; name: string; firstname: string; lastname: string; username: string; displayUsername: string | null; image: string | null; bio: string | null; year: string | null; course: string | null };
-    hosting: { id: string; eventTitle: string; eventDate: number; eventLoc: string; currentParticipants: number; maxParticipants: number | null }[];
-    attending: { id: string; eventTitle: string; eventDate: number; eventLoc: string; currentParticipants: number; maxParticipants: number | null }[];
+    hosting: { id: string; eventTitle: string; eventStartDate: string; eventStartTime: string; eventLoc: string; currentParticipants: number; maxParticipants: number | null }[];
+    attending: { id: string; eventTitle: string; eventStartDate: string; eventStartTime: string; eventLoc: string; currentParticipants: number; maxParticipants: number | null }[];
   };
 
   const isOwn = session?.user?.username === username;

@@ -1,47 +1,83 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import BannerUpload from "../BannerUpload";
+import DescriptionImageUpload from "../DescriptionImageUpload";
+
+interface AdminOrg { id: string; name: string; abbreviation: string; logo: string | null; }
 
 export default function CreateEventPage() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [eventBanner, setEventBanner] = useState<string | null>(null);
+  const [descImages, setDescImages] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+  const [adminOrgs, setAdminOrgs] = useState<AdminOrg[]>([]);
+  const [hostAs, setHostAs] = useState<"self" | string>("self"); // "self" or org.id
+
+  useEffect(() => {
+    fetch("/api/user/admin-orgs")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: unknown) => { if (Array.isArray(data)) setAdminOrgs(data as AdminOrg[]); });
+  }, []);
+
+  function addTag(raw: string) {
+    const trimmed = raw.trim().toLowerCase();
+    if (trimmed && !tags.includes(trimmed)) setTags([...tags, trimmed]);
+    setTagInput("");
+  }
+
+  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTag(tagInput);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
 
     const form = e.currentTarget;
-    const rawParticipants = (form.elements.namedItem("eventParticipants") as HTMLInputElement).value;
+    const get = (name: string) => (form.elements.namedItem(name) as HTMLInputElement).value;
+    const rawParticipants = get("eventParticipants");
     const maxParticipants = rawParticipants === "" ? null : Number(rawParticipants);
 
-    const data = {
-      userId: session?.user?.id,
-      eventTitle: (form.elements.namedItem("eventTitle") as HTMLInputElement).value,
-      eventDate: (form.elements.namedItem("eventDate") as HTMLInputElement).value,
-      eventDesc: (form.elements.namedItem("eventDesc") as HTMLTextAreaElement).value,
-      eventDur: Number((form.elements.namedItem("eventDur") as HTMLInputElement).value),
-      eventHost: (form.elements.namedItem("eventHost") as HTMLInputElement).value,
-      eventLoc: (form.elements.namedItem("eventLoc") as HTMLInputElement).value,
-      maxParticipants,
-    };
+    const eventStartDate = get("eventStartDate");
+    const eventEndDate = get("eventEndDate") || null;
+    const eventStartTime = get("eventStartTime");
+    const eventEndTime = get("eventEndTime");
 
-    if (new Date(data.eventDate) < new Date()) {
-      setError("Event date cannot be in the past");
+    if (eventEndDate && eventEndDate < eventStartDate) {
+      setError("End date cannot be before start date");
       return;
     }
-
-    if (data.eventDur < 1) {
-      setError("Invalid Duration (Value must be at least 1 minute)");
-      return;
-    }
-
     if (maxParticipants !== null && maxParticipants < 1) {
       setError("Max Participants must be at least 1");
       return;
     }
+
+    const selectedOrg = hostAs !== "self" ? adminOrgs.find((o) => o.id === hostAs) : null;
+    const data = {
+      userId: session?.user?.id,
+      eventTitle: get("eventTitle"),
+      eventStartDate,
+      eventEndDate,
+      eventStartTime,
+      eventEndTime,
+      eventDesc: (form.elements.namedItem("eventDesc") as HTMLTextAreaElement).value,
+      eventHost: selectedOrg ? selectedOrg.name : (session?.user?.name ?? ""),
+      eventLoc: get("eventLoc"),
+      maxParticipants,
+      orgId: selectedOrg?.id ?? null,
+      eventTags: tags.length > 0 ? JSON.stringify(tags) : null,
+      eventBanner,
+      eventImages: descImages.length > 0 ? JSON.stringify(descImages) : null,
+    };
 
     setLoading(true);
 
@@ -62,7 +98,8 @@ export default function CreateEventPage() {
     router.push("/events");
   }
 
-  const defaultHost = session?.user?.name ?? "";
+  const inputClass = "w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]";
+  const labelClass = "font-semibold text-sm block mb-1 text-[#3758BF]";
 
   return (
     <main className="min-h-screen bg-background flex items-start justify-center py-12 px-6">
@@ -72,53 +109,104 @@ export default function CreateEventPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
-            <label htmlFor="eventTitle" className="font-semibold text-sm block mb-1 text-[#3758BF]">Event Title</label>
+            <label className={labelClass}>Event Banner <span className="text-slate-400 font-normal">(optional)</span></label>
+            <BannerUpload current={null} onChange={setEventBanner} />
+          </div>
+
+          <div>
+            <label htmlFor="eventTitle" className={labelClass}>Event Title</label>
             <input id="eventTitle" name="eventTitle" type="text" required placeholder="e.g. Study Group – Finals Week"
-              className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
+              className={inputClass} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="eventDate" className="font-semibold text-sm block mb-1 text-[#3758BF]">Date & Time</label>
-              <input id="eventDate" name="eventDate" type="datetime-local" required
-                min={new Date().toISOString().slice(0, 16)}
-                className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
+              <label htmlFor="eventStartDate" className={labelClass}>Start Date</label>
+              <input id="eventStartDate" name="eventStartDate" type="date" required
+                min={new Date().toISOString().slice(0, 10)}
+                className={inputClass} />
             </div>
             <div>
-              <label htmlFor="eventDur" className="font-semibold text-sm block mb-1 text-[#3758BF]">Duration (minutes)</label>
-              <input id="eventDur" name="eventDur" type="number" min={1} defaultValue={30}
-                className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
+              <label htmlFor="eventEndDate" className={labelClass}>End Date <span className="text-slate-400 font-normal">(optional)</span></label>
+              <input id="eventEndDate" name="eventEndDate" type="date"
+                min={new Date().toISOString().slice(0, 10)}
+                className={inputClass} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="eventStartTime" className={labelClass}>Start Time</label>
+              <input id="eventStartTime" name="eventStartTime" type="time" required className={inputClass} />
+            </div>
+            <div>
+              <label htmlFor="eventEndTime" className={labelClass}>End Time</label>
+              <input id="eventEndTime" name="eventEndTime" type="time" required className={inputClass} />
             </div>
           </div>
 
           <div>
-            <label htmlFor="eventLoc" className="font-semibold text-sm block mb-1 text-[#3758BF]">Location</label>
+            <label htmlFor="eventLoc" className={labelClass}>Location</label>
             <input id="eventLoc" name="eventLoc" type="text" required placeholder="e.g. MVP Roofdeck"
-              className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
+              className={inputClass} />
           </div>
 
           <div>
-            <label htmlFor="eventHost" className="font-semibold text-sm block mb-1 text-[#3758BF]">Host</label>
-            <input id="eventHost" name="eventHost" type="text" required value={defaultHost} readOnly
-              className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 opacity-60 cursor-not-allowed" />
+            <label className={labelClass}>Host As</label>
+            {adminOrgs.length === 0 ? (
+              <input type="text" readOnly value={session?.user?.name ?? ""}
+                className={`${inputClass} opacity-60 cursor-not-allowed`} />
+            ) : (
+              <select value={hostAs} onChange={(e) => setHostAs(e.target.value)} className={inputClass}>
+                <option value="self">{session?.user?.name ?? "Yourself"}</option>
+                {adminOrgs.map((o) => (
+                  <option key={o.id} value={o.id}>{o.name} ({o.abbreviation})</option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
-            <label htmlFor="eventParticipants" className="font-semibold text-sm block mb-1 text-[#3758BF]">Max Participants <span className="text-slate-400 font-normal">(optional)</span></label>
+            <label htmlFor="eventParticipants" className={labelClass}>Max Participants <span className="text-slate-400 font-normal">(optional)</span></label>
             <input id="eventParticipants" name="eventParticipants" type="number" min={1} placeholder="e.g. 10"
-              className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF]" />
+              className={inputClass} />
           </div>
 
           <div>
-            <label htmlFor="eventDesc" className="font-semibold text-sm block mb-1 text-[#3758BF]">Description <span className="text-slate-400 font-normal">(optional)</span></label>
+            <label className={labelClass}>Tags <span className="text-slate-400 font-normal">(optional)</span></label>
+            <div className="rounded-xl bg-[#F8EACD] px-4 py-3 flex flex-wrap gap-2 min-h-13">
+              {tags.map((tag) => (
+                <span key={tag} className="flex items-center gap-1 bg-[#3758BF] text-white text-xs font-semibold rounded-full px-3 py-1">
+                  {tag}
+                  <button type="button" onClick={() => setTags(tags.filter((t) => t !== tag))}
+                    className="ml-1 hover:text-red-200 leading-none">×</button>
+                </span>
+              ))}
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                onBlur={() => tagInput.trim() && addTag(tagInput)}
+                placeholder={tags.length === 0 ? "Type a tag and press Enter" : ""}
+                className="bg-transparent text-amber-950 text-sm focus:outline-none min-w-30 flex-1"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="eventDesc" className={labelClass}>Description <span className="text-slate-400 font-normal">(optional)</span></label>
             <textarea id="eventDesc" name="eventDesc" rows={3} placeholder="What's this event about?"
-              className="w-full rounded-xl bg-[#F8EACD] px-4 py-3 text-amber-950 focus:outline-none focus:ring-2 focus:ring-[#3758BF] resize-none" />
+              className={`${inputClass} resize-none`} />
+          </div>
+
+          <div>
+            <label className={labelClass}>Description Images <span className="text-slate-400 font-normal">(optional, up to 5)</span></label>
+            <DescriptionImageUpload images={descImages} onChange={setDescImages} />
           </div>
 
           {error && (
-            <p className="rounded-xl bg-red-100 p-2 text-red-700 text-center text-sm">
-              {error}
-            </p>
+            <p className="rounded-xl bg-red-100 p-2 text-red-700 text-center text-sm">{error}</p>
           )}
 
           <div className="flex gap-3 mt-2">

@@ -1,8 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AvatarUpload from "./AvatarUpload";
+
+interface OrgMembership {
+  id: string;
+  orgId: string;
+  orgName: string;
+  orgSlug: string;
+  orgLogo: string | null;
+  orgAbbreviation: string;
+  role: string;
+  status: string;
+}
 
 interface Profile {
   id: string;
@@ -20,7 +31,8 @@ interface Profile {
 interface Event {
   id: string;
   eventTitle: string;
-  eventDate: number;
+  eventStartDate: string;
+  eventStartTime: string;
   eventLoc: string;
   currentParticipants: number;
   maxParticipants: number | null;
@@ -34,14 +46,20 @@ interface Props {
 }
 
 function EventCard({ event }: { event: Event }) {
-  const d = new Date(event.eventDate);
+  const dateLabel = (() => {
+    const [y, m, d] = event.eventStartDate.split("-");
+    return new Date(+y, +m - 1, +d).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  })();
+  const timeLabel = (() => {
+    const [h, m] = event.eventStartTime.split(":");
+    const d = new Date(); d.setHours(+h, +m);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  })();
   return (
     <Link href={`/events/${event.id}`}
       className="border rounded-xl p-4 hover:shadow-md transition-shadow flex flex-col gap-1">
       <p className="font-bold text-[#3758BF] leading-tight">{event.eventTitle}</p>
-      <p className="text-sm text-slate-500">
-        {d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })} · {d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-      </p>
+      <p className="text-sm text-slate-500">{dateLabel} · {timeLabel}</p>
       <p className="text-sm text-slate-500">At {event.eventLoc}</p>
       {event.maxParticipants != null && (
         <p className="text-xs text-slate-400">{event.currentParticipants} / {event.maxParticipants} participants</p>
@@ -59,6 +77,7 @@ export default function ProfileClient({ profile, hosting, attending, isOwn }: Pr
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [memberships, setMemberships] = useState<OrgMembership[]>([]);
   const [fields, setFields] = useState({
     displayUsername: profile.displayUsername ?? "",
     bio: profile.bio ?? "",
@@ -67,6 +86,13 @@ export default function ProfileClient({ profile, hosting, attending, isOwn }: Pr
     image: profile.image ?? "",
   });
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!isOwn) return;
+    fetch("/api/user/memberships")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: unknown) => { if (Array.isArray(data)) setMemberships(data as OrgMembership[]); });
+  }, [isOwn]);
 
   const displayName = profile.name;
   const avatar = editing
@@ -173,6 +199,33 @@ export default function ProfileClient({ profile, hosting, attending, isOwn }: Pr
 
         {saved && <p className="mt-4 text-green-600 text-sm font-semibold text-center">Profile updated!</p>}
       </div>
+
+      {/* Org Memberships (own profile only) */}
+      {isOwn && memberships.filter((m) => m.status !== "rejected").length > 0 && (
+        <div className="bg-white border rounded-2xl shadow-sm p-6 mb-8">
+          <h2 className="text-lg font-black text-zpink mb-4">Organizations</h2>
+          <div className="flex flex-wrap gap-3">
+            {memberships.filter((m) => m.status !== "rejected").map((m) => (
+              <Link key={m.id} href={`/orgs/${m.orgSlug}`}
+                className="flex items-center gap-2 border rounded-full px-3 py-1.5 hover:shadow-sm transition">
+                {m.orgLogo
+                  ? <img src={m.orgLogo} alt="" className="w-6 h-6 rounded-full object-contain" />
+                  : <div className="w-6 h-6 rounded-full bg-[#3758BF]/10 flex items-center justify-center text-[#3758BF] text-xs font-black">{m.orgAbbreviation.charAt(0)}</div>
+                }
+                <span className="text-sm font-semibold text-slate-700">{m.orgAbbreviation}</span>
+                <span className={`text-xs rounded-full px-2 py-0.5 font-semibold ${
+                  m.status === "approved" ? "bg-green-100 text-green-700" :
+                  m.status === "rejected" ? "bg-red-100 text-red-600" :
+                  "bg-yellow-100 text-yellow-700"
+                }`}>{m.status === "approved" ? m.role : m.status}</span>
+              </Link>
+            ))}
+          </div>
+          <Link href="/orgs" className="text-xs text-[#3758BF] font-semibold mt-3 inline-block hover:underline">
+            Browse all organizations →
+          </Link>
+        </div>
+      )}
 
       {/* Events */}
       <div className="grid sm:grid-cols-2 gap-8">
